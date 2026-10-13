@@ -27,7 +27,8 @@ html,body{
   align-items:center;
   padding:44px 20px 72px;
 }
-header{text-align:center;margin-bottom:32px;}
+header{text-align:center;margin-bottom:24px;width:100%;max-width:860px;}
+.brand-logo{display:block;width:100%;height:auto;border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;}
 .brand{
   font-family:'Cormorant Garamond',Georgia,serif;
   font-size:clamp(1.9rem,6vw,2.5rem);
@@ -79,453 +80,538 @@ a.card:active{opacity:.9;}
 .desc{font-size:.72rem;color:var(--dim);line-height:1.55;flex:1;}
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:7px;}
 .chip{font-size:.58rem;color:#8a96a5;padding:2px 6px;border-radius:999px;border:1px solid var(--border);font-weight:500;}
+.jump{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;width:100%;max-width:860px;margin-bottom:28px;position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;}
+.jump a{font-size:.72rem;font-weight:600;letter-spacing:.08em;color:var(--navy);text-decoration:none;padding:5px 12px;border:1px solid var(--border);border-radius:999px;background:var(--card);}
+.jump a:hover,.jump a:focus{border-color:var(--gold);outline:none;}
+.student{width:100%;max-width:860px;margin-bottom:30px;scroll-margin-top:60px;}
+.student-head{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.5rem;font-weight:600;color:var(--navy);letter-spacing:.06em;padding-bottom:6px;margin-bottom:12px;border-bottom:2px solid var(--gold);}
+html{scroll-behavior:smooth;}
 footer{margin-top:44px;font-size:.7rem;color:#aab;text-align:center;letter-spacing:.05em;}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">Real English <em>Errors</em></div>
+  <img class="brand-logo" src="logo.png" alt="Real English Errors: Real students. Real errors. Real fixes." width="1200" height="491">
   <p class="tagline">English exercises &mdash; select a lesson</p>
 </header>
 
-<div class="grid">
+<nav class="jump">
+  <a href="#ac">AC</a>
+  <a href="#as">AS</a>
+  <a href="#asc">ASC</a>
+  <a href="#dp">DP</a>
+  <a href="#dt">DT</a>
+  <a href="#gg">GG</a>
+  <a href="#m">M</a>
+  <a href="#mk">MK</a>
+  <a href="#po">PO</a>
+  <a href="#sk">SK</a>
+</nav>
 
-  <a class="card" href="exercises/YDS%20Mock%20Exam.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">YDS Mock Exam</div>
-        <div class="subtitle">Test of English, 80 questions</div>
+<section class="student" id="ac">
+  <h2 class="student-head">AC</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/acw2.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">ACW2</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Practice</span>
-    </div>
-    <p class="desc">A full YDS-style practice exam: 80 multiple-choice questions on vocabulary, grammar, reading and dialogues. Then copy your results and send them by email or WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/ggw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">GGW1</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary (&ldquo;advice&rdquo; / &ldquo;advise&rdquo;), grammar (&ldquo;offered to drop me off&rdquo;, &ldquo;fascinated by&rdquo;, &ldquo;it wasn't worth it&rdquo;, &ldquo;resist the urge&rdquo; and more) and pronunciation (&ldquo;toys&rdquo;), then practise with word choice, fill-in-the-blanks, sound quizzes and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Four short parts: fill in the vocabulary blanks, correct grammar mistakes, find the stressed syllable, and read two short stories. Then send your results by email.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/acw2.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">ACW2</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/acw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">ACW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;advice&rdquo; / &ldquo;advise&rdquo;), grammar (&ldquo;offered to drop me off&rdquo;, &ldquo;fascinated by&rdquo;, &ldquo;it wasn't worth it&rdquo;, &ldquo;resist the urge&rdquo; and more) and pronunciation (&ldquo;toys&rdquo;), then practise with word choice, fill-in-the-blanks, sound quizzes and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/skw2.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">SKW2</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary (moving, work and everyday expressions), grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;caveat&rdquo;, &ldquo;pull from&rdquo;, &ldquo;cater to&rdquo;, &ldquo;please&rdquo;), grammar (&ldquo;did really check&rdquo;) and pronunciation (&ldquo;maniac&rdquo; / &ldquo;manic&rdquo; / &ldquo;mania&rdquo;, &ldquo;ties&rdquo; / &ldquo;tights&rdquo; / &ldquo;thighs&rdquo;), then practise with word choice, do/does/did sentences, sound quizzes and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/mkw8.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">MKW8</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/YDS%20Mock%20Exam.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">YDS Mock Exam</div>
+          <div class="subtitle">Test of English, 80 questions</div>
+        </div>
+        <span class="tag">Practice</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;consume media&rdquo;, &ldquo;catch up on&rdquo; / &ldquo;catch up with&rdquo;, &ldquo;open concept&rdquo;, &ldquo;derailed&rdquo;) and grammar (simple tenses for facts, &ldquo;double past&rdquo;), then practise with fill-in-the-blanks, fix-the-mistake exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/mkw7.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">MKW7</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">A full YDS-style practice exam: 80 multiple-choice questions on vocabulary, grammar, reading and dialogues. Then copy your results and send them by email or WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;in a row&rdquo;, &ldquo;meal prep&rdquo;, &ldquo;catch&rdquo; vs. &ldquo;catch up&rdquo;, &ldquo;accent&rdquo; vs. &ldquo;dialect&rdquo;) and grammar (&ldquo;learn&rdquo; vs. &ldquo;study&rdquo;), then practise with fill-in-the-blanks, a learn/study exercise and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/pow4.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">POW4</div>
-        <div class="subtitle">Homework from our last class</div>
+  </div>
+</section>
+
+<section class="student" id="as">
+  <h2 class="student-head">AS</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/asw2.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">ASW2</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;carsick&rdquo; / &ldquo;seasick&rdquo;, &ldquo;switching out my wardrobe&rdquo;, &ldquo;nepotism&rdquo;, &ldquo;take after&rdquo;) and grammar (&ldquo;lent me one&rdquo;, &ldquo;of his own&rdquo;, &ldquo;mom's friend's daughter&rdquo;, &ldquo;come back from work&rdquo;), then practise with word choice, fill-in-the-blanks and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/pow3.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">POW3</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary and expressions (&ldquo;a fly on the wall&rdquo;, &ldquo;owned vs owed&rdquo;), grammar (&ldquo;if I were you&rdquo;, &ldquo;keep supporting&rdquo;) and pronunciation (&ldquo;chaotic&rdquo;, &ldquo;standardize&rdquo;), then practise with fill-in-the-blanks, stress questions and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;in a row&rdquo;, &ldquo;secondhand embarrassment&rdquo;), grammar (the third conditional, &ldquo;ever since&rdquo;) and pronunciation (&ldquo;theses&rdquo;), then practise with fill-in-the-blanks, a thesis/theses exercise and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/asw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">ASW1</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/asw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">ASW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary and expressions (&ldquo;the eye of the storm&rdquo;, &ldquo;half full / half empty&rdquo;) and grammar (&ldquo;specific&rdquo;), then practise with fill-in-the-blanks, fix-the-mistake exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/asw2.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">ASW2</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary and expressions (&ldquo;the eye of the storm&rdquo;, &ldquo;half full / half empty&rdquo;) and grammar (&ldquo;specific&rdquo;), then practise with fill-in-the-blanks, fix-the-mistake exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary and expressions (&ldquo;a fly on the wall&rdquo;, &ldquo;owned vs owed&rdquo;), grammar (&ldquo;if I were you&rdquo;, &ldquo;keep supporting&rdquo;) and pronunciation (&ldquo;chaotic&rdquo;, &ldquo;standardize&rdquo;), then practise with fill-in-the-blanks, stress questions and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/ascw2.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">ASCW2</div>
-        <div class="subtitle">Homework from our last class</div>
+  </div>
+</section>
+
+<section class="student" id="asc">
+  <h2 class="student-head">ASC</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/ascw2.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">ASCW2</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar (&ldquo;me neither&rdquo;, &ldquo;to visit&rdquo;, &ldquo;it lowers&rdquo;) and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and three short readings. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/ascw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">ASCW1</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary, grammar (&ldquo;me neither&rdquo;, &ldquo;to visit&rdquo;, &ldquo;it lowers&rdquo;) and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and three short readings. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar (irregular past verbs like blew and chose, &ldquo;have a shower&rdquo;, &ldquo;he doesn't&rdquo;) and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and two short readings. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/dtw3.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">DTW3</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/ascw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">ASCW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (&ldquo;acidic&rdquo;, &ldquo;the sixteen hundreds&rdquo;, &ldquo;church hurt&rdquo;), grammar (&ldquo;pay for&rdquo;, &ldquo;google something&rdquo;, &ldquo;that I thought was&rdquo;) and pronunciation (&ldquo;know&rdquo;, &ldquo;knowledge&rdquo;), then practise with fill-in-the-blanks, fix-the-mistake and sound exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/dtw2.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">DTW2</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary, grammar (irregular past verbs like blew and chose, &ldquo;have a shower&rdquo;, &ldquo;he doesn't&rdquo;) and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and two short readings. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's grammar (&ldquo;I thought it'd be&rdquo; vs &ldquo;I think it'll be&rdquo; and conditionals: the same sentence three ways) and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/acw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">ACW1</div>
-        <div class="subtitle">Homework from our last class</div>
+  </div>
+</section>
+
+<section class="student" id="dp">
+  <h2 class="student-head">DP</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/dpw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">DPW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary (moving, work and everyday expressions), grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/ggw4.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">GGW4</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and two short readings. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's clothing vocabulary (&ldquo;oversized&rdquo;, &ldquo;crop top&rdquo;, &ldquo;half-sleeve&rdquo;, &ldquo;roll up&rdquo; / &ldquo;scrunch up&rdquo;, &ldquo;devalue&rdquo;), grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake, stressed-syllable exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/ggw3.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">GGW3</div>
-        <div class="subtitle">Homework from our last class</div>
+  </div>
+</section>
+
+<section class="student" id="dt">
+  <h2 class="student-head">DT</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/dtw3.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">DTW3</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's health vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake, "already" and stressed-syllable exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/dtw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">DTW1</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary (&ldquo;acidic&rdquo;, &ldquo;the sixteen hundreds&rdquo;, &ldquo;church hurt&rdquo;), grammar (&ldquo;pay for&rdquo;, &ldquo;google something&rdquo;, &ldquo;that I thought was&rdquo;) and pronunciation (&ldquo;know&rdquo;, &ldquo;knowledge&rdquo;), then practise with fill-in-the-blanks, fix-the-mistake and sound exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and stress exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/mkw3.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">MKW3</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/dtw2.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">DTW2</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/mkw4.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">MKW4</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's grammar (&ldquo;I thought it'd be&rdquo; vs &ldquo;I think it'll be&rdquo; and conditionals: the same sentence three ways) and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, grammar and pronunciation exercises and two short readings. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/mkw5.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">MKW5</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/dtw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">DTW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises, a short reading and a mini-lesson on the 2nd conditional. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/mkw6.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">MKW6</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and stress exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary and grammar corrections, then practise with fill-in-the-blanks and fix-the-mistake exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/pow2.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">POW2</div>
-        <div class="subtitle">Homework from our last class</div>
+  </div>
+</section>
+
+<section class="student" id="gg">
+  <h2 class="student-head">GG</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/ggw4.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">GGW4</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, grammar and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/skw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">SKW1</div>
-        <div class="subtitle">Homework from our last class</div>
+      <p class="desc">Review this week's clothing vocabulary (&ldquo;oversized&rdquo;, &ldquo;crop top&rdquo;, &ldquo;half-sleeve&rdquo;, &ldquo;roll up&rdquo; / &ldquo;scrunch up&rdquo;, &ldquo;devalue&rdquo;), grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake, stressed-syllable exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks and fix-the-mistake exercises, a short reading and a mini-lesson on verbs like "split". Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
+    </a>
 
-  <a class="card" href="exercises/dpw1.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">DPW1</div>
-        <div class="subtitle">Homework from our last class</div>
+    <a class="card" href="exercises/ggw3.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">GGW3</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
       </div>
-      <span class="tag">Homework</span>
-    </div>
-    <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and two short readings. Then send your results by email and WhatsApp.</p>
-    <div class="chips">
-      <span class="chip">Vocabulary</span>
-      <span class="chip">Grammar</span>
-      <span class="chip">Pronunciation</span>
-      <span class="chip">Reading</span>
-    </div>
-  </a>
-
-  <a class="card" href="exercises/M%20tense%20quest.html">
-    <div class="card-top">
-      <div class="titles">
-        <div class="title">Tense Quest</div>
-        <div class="subtitle">Simple vs Continuous</div>
+      <p class="desc">Review this week's health vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake, "already" and stressed-syllable exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
       </div>
-      <span class="tag">Practice</span>
-    </div>
-    <p class="desc">Travel through the tense map: build past, present and future sentences, master -ing spelling, choose simple or continuous, practise when / while and stative verbs, then spot the mistakes and write your own sentences.</p>
-    <div class="chips">
-      <span class="chip">Grammar</span>
-      <span class="chip">Spelling</span>
-      <span class="chip">Writing</span>
-    </div>
-  </a>
+    </a>
 
-</div>
+    <a class="card" href="exercises/ggw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">GGW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Four short parts: fill in the vocabulary blanks, correct grammar mistakes, find the stressed syllable, and read two short stories. Then send your results by email.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="student" id="m">
+  <h2 class="student-head">M</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/M%20tense%20quest.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">Tense Quest</div>
+          <div class="subtitle">Simple vs Continuous</div>
+        </div>
+        <span class="tag">Practice</span>
+      </div>
+      <p class="desc">Travel through the tense map: build past, present and future sentences, master -ing spelling, choose simple or continuous, practise when / while and stative verbs, then spot the mistakes and write your own sentences.</p>
+      <div class="chips">
+        <span class="chip">Grammar</span>
+        <span class="chip">Spelling</span>
+        <span class="chip">Writing</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="student" id="mk">
+  <h2 class="student-head">MK</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/mkw8.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">MKW8</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary (&ldquo;consume media&rdquo;, &ldquo;catch up on&rdquo; / &ldquo;catch up with&rdquo;, &ldquo;open concept&rdquo;, &ldquo;derailed&rdquo;) and grammar (simple tenses for facts, &ldquo;double past&rdquo;), then practise with fill-in-the-blanks, fix-the-mistake exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/mkw7.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">MKW7</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary (&ldquo;in a row&rdquo;, &ldquo;meal prep&rdquo;, &ldquo;catch&rdquo; vs. &ldquo;catch up&rdquo;, &ldquo;accent&rdquo; vs. &ldquo;dialect&rdquo;) and grammar (&ldquo;learn&rdquo; vs. &ldquo;study&rdquo;), then practise with fill-in-the-blanks, a learn/study exercise and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/mkw6.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">MKW6</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary and grammar corrections, then practise with fill-in-the-blanks and fix-the-mistake exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/mkw5.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">MKW5</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises, a short reading and a mini-lesson on the 2nd conditional. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/mkw4.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">MKW4</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, grammar and pronunciation exercises and two short readings. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/mkw3.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">MKW3</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, fix-the-mistake and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="student" id="po">
+  <h2 class="student-head">PO</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/pow4.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">POW4</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary (&ldquo;carsick&rdquo; / &ldquo;seasick&rdquo;, &ldquo;switching out my wardrobe&rdquo;, &ldquo;nepotism&rdquo;, &ldquo;take after&rdquo;) and grammar (&ldquo;lent me one&rdquo;, &ldquo;of his own&rdquo;, &ldquo;mom's friend's daughter&rdquo;, &ldquo;come back from work&rdquo;), then practise with word choice, fill-in-the-blanks and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/pow3.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">POW3</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary (&ldquo;in a row&rdquo;, &ldquo;secondhand embarrassment&rdquo;), grammar (the third conditional, &ldquo;ever since&rdquo;) and pronunciation (&ldquo;theses&rdquo;), then practise with fill-in-the-blanks, a thesis/theses exercise and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/pow2.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">POW2</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks, grammar and pronunciation exercises and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<section class="student" id="sk">
+  <h2 class="student-head">SK</h2>
+  <div class="grid">
+
+    <a class="card" href="exercises/skw2.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">SKW2</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary (&ldquo;caveat&rdquo;, &ldquo;pull from&rdquo;, &ldquo;cater to&rdquo;, &ldquo;please&rdquo;), grammar (&ldquo;did really check&rdquo;) and pronunciation (&ldquo;maniac&rdquo; / &ldquo;manic&rdquo; / &ldquo;mania&rdquo;, &ldquo;ties&rdquo; / &ldquo;tights&rdquo; / &ldquo;thighs&rdquo;), then practise with word choice, do/does/did sentences, sound quizzes and a short reading. Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+    <a class="card" href="exercises/skw1.html">
+      <div class="card-top">
+        <div class="titles">
+          <div class="title">SKW1</div>
+          <div class="subtitle">Homework from our last class</div>
+        </div>
+        <span class="tag">Homework</span>
+      </div>
+      <p class="desc">Review this week's vocabulary, grammar corrections and pronunciation, then practise with fill-in-the-blanks and fix-the-mistake exercises, a short reading and a mini-lesson on verbs like "split". Then send your results by email and WhatsApp.</p>
+      <div class="chips">
+        <span class="chip">Vocabulary</span>
+        <span class="chip">Grammar</span>
+        <span class="chip">Pronunciation</span>
+        <span class="chip">Reading</span>
+      </div>
+    </a>
+
+  </div>
+</section>
 
 <footer>Real English Errors &nbsp;&middot;&nbsp; All exercises are password protected.</footer>
 
