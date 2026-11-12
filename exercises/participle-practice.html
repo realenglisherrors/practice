@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Participle clauses – rewrite practice</title>
+<style>
+:root{--ink:#1d2433;--muted:#5b6475;--line:#d9deea;--bg:#f6f7fb;--card:#fff;
+--v2:#d97706;--v3:#2563eb;--have:#2e8b3e;--be:#7c3aed;
+--ok:#15803d;--okbg:#e8f6ec;--bad:#b42318;--badbg:#fdecea;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+main{max-width:600px;margin:0 auto;padding:16px 16px 56px}
+h1{font-size:1.25rem;margin:4px 0 2px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+.bar{height:8px;background:#e3e7f1;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.count{font-size:.8rem;color:var(--muted);text-align:right;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 1px 2px rgba(20,30,60,.04)}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.prompt{font-size:1.1rem;font-weight:600;margin:4px 0 12px}
+.rule{background:#f0f4ff;border-left:4px solid var(--accent);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:.95rem}
+.rule p{margin:6px 0}
+.cue{background:#f7f8fc;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0 12px;font-size:1.1rem;font-weight:600}
+.cue span{display:block}
+.c2{color:var(--v2);font-weight:700}.c3{color:var(--v3);font-weight:700}
+.ch{color:var(--have);font-weight:700}.cb{color:var(--be);font-weight:700}
+button{font:inherit;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{padding:10px 13px;border:2px solid var(--line);background:#fff;border-radius:10px;font-size:1.05rem;color:var(--ink)}
+.chip.placed{border-color:var(--v3);background:#eef3ff}
+.chip:disabled{cursor:default}
+.slot{min-height:62px;border:2px dashed var(--line);border-radius:12px;padding:8px;margin:6px 0 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+.slot.ok{border-color:var(--ok);background:var(--okbg);border-style:solid}
+.slot.bad{border-color:var(--bad);background:var(--badbg);border-style:solid}
+.hint{color:var(--muted);font-size:.9rem}
+.primary{display:block;width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;font-size:1.05rem}
+.primary:disabled{background:#b9c3d9;cursor:default}
+.secondary{display:block;width:100%;margin-top:10px;padding:13px;border:2px solid var(--accent);border-radius:12px;background:#fff;color:var(--accent);font-weight:700;font-size:1rem}
+.clear{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.9rem;padding:4px 0}
+.fb{margin-top:14px;padding:12px 14px;border-radius:12px;font-size:.98rem}
+.fb.ok{background:var(--okbg);border:1px solid #b6e0c2}
+.fb.bad{background:var(--badbg);border:1px solid #f1b9b3}
+.fb b.v{display:block;margin-bottom:4px}
+.fb .ans{font-weight:700}
+.fb p{margin:6px 0}
+.score{font-size:2.2rem;font-weight:800;margin:6px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+td{padding:8px 4px;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <h1>Participle clauses</h1>
+  <p class="sub">Rewrite two sentences as one. Tap the words in order.</p>
+  <div class="bar"><i id="barfill"></i></div>
+  <div class="count" id="count"></div>
+  <div id="app"></div>
+</main>
+
+<script>
+"use strict";
+
+/* ---------- CONTENT ----------
+   cue   : the two original sentences
+   ans   : the correct sentence, split into tappable chips
+   dis   : extra chips that look tempting. {t, e} e = explanation if used (optional)
+   v3    : (optional) V3 used, for the default explanation of wrong verb forms
+*/
+const SECTIONS = [
+{
+  id:"be", title:"1. Delete the subject + be verb",
+  instr:`Rewrite as one sentence. Delete the <b>subject</b> and the <span class="cb">be</span> verb from the first sentence. No <i>Having</i>.`,
+  intro:`<p><i>She <span class="cb">was</span> nervous. She forgot her speech.</i></p>
+         <p>Delete <span class="cb">She was</span> from the first sentence. Join the two with a comma. The second sentence stays complete.</p>
+         <p>→ <b>Nervous, she forgot her speech.</b></p>
+         <p>Not every word in the bank is needed.</p>`,
+  order:"Order: what is left of the first sentence, a comma, then the full second sentence.",
+  items:[
+   {cue:["I was tired.","I took a nap."],
+    ans:["Tired,","I","took","a","nap."],
+    dis:[{t:"was",e:"Delete the <span class='cb'>be</span> verb. <i>Was</i> goes away with the subject."},
+         {t:"I",e:"Keep only one <i>I</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>I was</i> from the first sentence. <b>Tired</b> stays."},
+   {cue:["The pizza is made every day.","The pizza is the best."],
+    ans:["Made","every","day,","the","pizza","is","the","best."],
+    dis:[{t:"is",e:"Only the <i>is</i> in the main clause stays. The first <i>is</i> is deleted with the subject."},
+         {t:"The",e:"After the comma the sentence continues, so use lowercase: <i>the pizza</i>. The sentence now starts with <i>Made</i>."}],
+    why:"Delete <i>The pizza is</i> from the first sentence. <b>Made</b> (V3) stays. The main clause <i>the pizza is the best</i> stays complete."},
+   {cue:["The pizza was made every day.","The pizza was the best."],
+    ans:["Made","every","day,","the","pizza","was","the","best."],
+    dis:[{t:"was",e:"Only the <i>was</i> in the main clause stays. The first <i>was</i> is deleted with the subject."},
+         {t:"is",e:"Keep the past tense in the main clause: <i>was</i>."}],
+    why:"Delete <i>The pizza was</i> from the first sentence. The main clause keeps its past tense: <i>the pizza was the best</i>."},
+   {cue:["The house was built in 1990.","The house needed repairs."],
+    ans:["Built","in","1990,","the","house","needed","repairs."],
+    dis:[{t:"was",e:"Delete the <span class='cb'>be</span> verb. <i>Was</i> goes away with the subject."},
+         {t:"The",e:"After the comma the sentence continues, so use lowercase: <i>the house</i>."}],
+    why:"Delete <i>The house was</i> from the first sentence. <b>Built in 1990</b> stays."},
+   {cue:["I was nervous.","I couldn't sleep."],
+    ans:["Nervous,","I","couldn't","sleep."],
+    dis:[{t:"was",e:"Delete the <span class='cb'>be</span> verb. <i>Was</i> goes away with the subject."},
+         {t:"I",e:"Keep only one <i>I</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>I was</i> from the first sentence. <b>Nervous</b> stays."}
+  ]
+},
+{
+  id:"having", title:"2. Having + V3",
+  instr:`Rewrite as one sentence. The first action was finished first. Use <span class="ch">Having</span> + <span class="c3">V3</span>.`,
+  intro:`<p><i>She finished the report. She went home.</i></p>
+         <p>The first action is finished before the second. Replace the first verb with <span class="ch">Having</span> + <span class="c3">V3</span> and delete the subject.</p>
+         <p>→ <b><span class="ch">Having</span> <span class="c3">finished</span> the report, she went home.</b></p>
+         <p>Watch out for the verb forms in the bank. Only one is V3.</p>`,
+  order:"Order: Having + V3 + the rest of the first sentence, a comma, then the full second sentence.",
+  items:[
+   {cue:["I ate a lot of pasta.","I felt sick."], v3:"eaten",
+    ans:["Having","eaten","a","lot","of","pasta,","I","felt","sick."],
+    dis:[{t:"ate"},{t:"eat"},{t:"I",e:"Keep only one <i>I</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>I</i> and replace <i>ate</i> with <b>Having eaten</b>. Eating finished before feeling sick."},
+   {cue:["I studied in school.","I got a job."], v3:"studied",
+    ans:["Having","studied","in","school,","I","got","a","job."],
+    dis:[{t:"study",e:"<i>Study</i> is V1. After <i>Having</i> use V3: <b>studied</b>."},
+         {t:"studying",e:"<i>Studying</i> does not show that the first action was finished first. Use <i>Having</i> + V3: <b>studied</b>."},
+         {t:"I",e:"Keep only one <i>I</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>I</i> and use <b>Having studied</b>. Studying finished before getting the job."},
+   {cue:["We saw the film.","We wanted to read the book."], v3:"seen",
+    ans:["Having","seen","the","film,","we","wanted","to","read","the","book."],
+    dis:[{t:"saw"},{t:"see"},{t:"we",e:"Keep only one <i>we</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>We</i> and replace <i>saw</i> with <b>Having seen</b>."},
+   {cue:["He went to the doctor.","He felt better."], v3:"gone",
+    ans:["Having","gone","to","the","doctor,","he","felt","better."],
+    dis:[{t:"went"},{t:"go"},{t:"he",e:"Keep only one <i>he</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>He</i> and replace <i>went</i> with <b>Having gone</b>."},
+   {cue:["She wrote the email.","She closed her laptop."], v3:"written",
+    ans:["Having","written","the","email,","she","closed","her","laptop."],
+    dis:[{t:"wrote"},{t:"write"},{t:"she",e:"Keep only one <i>she</i>. The subject of the first sentence is deleted."}],
+    why:"Delete <i>She</i> and replace <i>wrote</i> with <b>Having written</b>."}
+  ]
+},
+{
+  id:"been", title:"3. Having been + V3",
+  instr:`Rewrite as one sentence. The first sentence is passive and was finished first. Use <span class="ch">Having been</span> + <span class="c3">V3</span>.`,
+  intro:`<p><i>The cake <span class="cb">was</span> baked on Friday. The cake was eaten on Saturday.</i></p>
+         <p>The first sentence is passive (<i>was baked</i>) and finished first. Delete the subject and replace <span class="cb">was</span> with <span class="ch">Having been</span>.</p>
+         <p>→ <b><span class="ch">Having been</span> <span class="c3">baked</span> on Friday, the cake was eaten on Saturday.</b></p>`,
+  order:"Order: Having been + V3 + the rest of the first sentence, a comma, then the full second sentence.",
+  items:[
+   {cue:["The pizza was made with fresh dough.","The pizza was the best."], v3:"made",
+    ans:["Having","been","made","with","fresh","dough,","the","pizza","was","the","best."],
+    dis:[{t:"was",e:"Only the <i>was</i> in the main clause stays. In the first part, <i>Having been</i> replaces <i>was</i>."},
+         {t:"being",e:"<i>Being</i> does not show that the action was finished first. Use <i>Having been</i>."},
+         {t:"The",e:"After the comma the sentence continues, so use lowercase: <i>the pizza</i>."}]  ,
+    why:"The pizza <b>received</b> the action, so it is passive: <b>Having been made</b>. Delete <i>The pizza was</i>."},
+   {cue:["The report was finished on Friday.","The report was sent to the client."], v3:"finished",
+    ans:["Having","been","finished","on","Friday,","the","report","was","sent","to","the","client."],
+    dis:[{t:"was",e:"Only the <i>was</i> in the main clause stays. In the first part, <i>Having been</i> replaces <i>was</i>."},
+         {t:"being",e:"<i>Being</i> does not show that the action was finished first. Use <i>Having been</i>."},
+         {t:"The",e:"After the comma the sentence continues, so use lowercase: <i>the report</i>."}],
+    why:"Delete <i>The report was</i> and use <b>Having been finished</b>."},
+   {cue:["The house was cleaned.","The house looked great."], v3:"cleaned",
+    ans:["Having","been","cleaned,","the","house","looked","great."],
+    dis:[{t:"was",e:"Delete <i>was</i>. <i>Having been</i> replaces it."},
+         {t:"being",e:"<i>Being</i> does not show that the action was finished first. Use <i>Having been</i>."},
+         {t:"The",e:"After the comma the sentence continues, so use lowercase: <i>the house</i>."}],
+    why:"Delete <i>The house was</i> and use <b>Having been cleaned</b>."},
+   {cue:["The letter was written by hand.","The letter was hard to read."], v3:"written",
+    ans:["Having","been","written","by","hand,","the","letter","was","hard","to","read."],
+    dis:[{t:"wrote",e:"<i>Wrote</i> is V2. After <i>Having been</i> use V3: <b>written</b>."},
+         {t:"was",e:"Only the <i>was</i> in the main clause stays. In the first part, <i>Having been</i> replaces <i>was</i>."},
+         {t:"The",e:"After the comma the sentence continues, so use lowercase: <i>the letter</i>."}],
+    why:"Delete <i>The letter was</i> and use <b>Having been written</b>."}
+  ]
+}
+];
+
+/* ---------- STATE ---------- */
+const app = document.getElementById("app");
+const barfill = document.getElementById("barfill");
+const countEl = document.getElementById("count");
+
+let queue = [], pos = 0, firstTry = {}, attempted = {}, totalQ = 0, retryMode = false;
+
+function buildQueue(){
+  const q=[];
+  SECTIONS.forEach(sec=>{
+    q.push({kind:"intro", sec});
+    sec.items.forEach((item,i)=>q.push({kind:"q", sec, item, key:sec.id+"-"+i}));
+  });
+  return q;
+}
+function start(){
+  queue = buildQueue(); pos = 0; firstTry = {}; attempted = {}; retryMode = false;
+  totalQ = queue.filter(x=>x.kind==="q").length;
+  render();
+}
+function startRetry(){
+  const missed = queue.filter(x=>x.kind==="q" && firstTry[x.key]===false);
+  queue = missed.map(m=>({kind:"q", sec:m.sec, item:m.item, key:m.key}));
+  pos = 0; retryMode = true; render();
+}
+
+/* ---------- HELPERS ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function el(tag, cls, html){const e=document.createElement(tag); if(cls)e.className=cls; if(html!==undefined)e.innerHTML=html; return e;}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function record(key, ok){
+  if(!retryMode && !attempted[key]) firstTry[key]=ok;
+  attempted[key]=true;
+}
+function progress(){
+  const done = Object.keys(attempted).length;
+  barfill.style.width = (retryMode ? 100 : Math.round(done/totalQ*100)) + "%";
+  countEl.textContent = retryMode ? "Practising missed items" : done + " / " + totalQ;
+}
+function nextBtn(label){
+  const b = el("button","primary",label||"Next");
+  b.onclick = ()=>{pos++; render(); window.scrollTo({top:0,behavior:"smooth"});};
+  return b;
+}
+function feedback(ok, headline, bodyHtml){
+  const f = el("div","fb "+(ok?"ok":"bad"));
+  f.innerHTML = `<b class="v">${headline}</b>${bodyHtml}`;
+  return f;
+}
+function countWords(a){const m={};a.forEach(t=>m[t]=(m[t]||0)+1);return m;}
+
+/* ---------- RENDER ---------- */
+function render(){
+  progress();
+  app.innerHTML = "";
+  if(pos >= queue.length){ return renderEnd(); }
+  const cur = queue[pos];
+  const card = el("div","card");
+  app.appendChild(card);
+
+  if(cur.kind==="intro"){
+    card.appendChild(el("div","tag","Section"));
+    card.appendChild(el("div","prompt",cur.sec.title));
+    card.appendChild(el("div","rule",cur.sec.intro));
+    const b = el("button","primary","Start"); b.onclick=()=>{pos++;render();};
+    card.appendChild(b);
+    return;
+  }
+  card.appendChild(el("div","tag",cur.sec.title));
+  renderBuild(card,cur);
+}
+
+/* ---- rewrite by tapping ---- */
+function renderBuild(card,cur){
+  const it = cur.item, sec = cur.sec;
+  card.appendChild(el("div","prompt",sec.instr));
+  card.appendChild(el("div","cue", it.cue.map(s=>`<span>${esc(s)}</span>`).join("")));
+
+  const disObjs = it.dis.map(d=>typeof d==="string"?{t:d}:d);
+  const bankItems = shuffle(it.ans.concat(disObjs.map(d=>d.t)).map((t,i)=>({id:i,t})));
+  const placed = [];
+  const slot = el("div","slot");
+  const bank = el("div","chips");
+  const check = el("button","primary","Check");
+  const clear = el("button","clear","Clear");
+  let locked = false;
+
+  function draw(){
+    slot.innerHTML = ""; bank.innerHTML = "";
+    placed.forEach(id=>{
+      const w = bankItems.find(x=>x.id===id);
+      const b = el("button","chip placed"); b.textContent = w.t;
+      b.onclick = ()=>{ if(locked) return; placed.splice(placed.indexOf(id),1); draw(); };
+      slot.appendChild(b);
+    });
+    if(!placed.length) slot.appendChild(el("span","hint","Tap the words below. Tap a word above to remove it."));
+    bankItems.filter(x=>!placed.includes(x.id)).forEach(w=>{
+      const b = el("button","chip"); b.textContent = w.t;
+      b.onclick = ()=>{ if(locked) return; placed.push(w.id); draw(); };
+      bank.appendChild(b);
+    });
+    check.disabled = placed.length===0;
+  }
+  card.appendChild(slot); card.appendChild(bank);
+  card.appendChild(clear); card.appendChild(check);
+  clear.onclick = ()=>{ if(locked) return; placed.length=0; draw(); };
+  draw();
+
+  check.onclick = ()=>{
+    locked = true; check.remove(); clear.remove();
+    const mine = placed.map(id=>bankItems.find(x=>x.id===id).t);
+    const ok = mine.join(" ")===it.ans.join(" ");
+    record(cur.key, ok);
+    slot.classList.add(ok?"ok":"bad");
+    slot.querySelectorAll("button").forEach(b=>b.disabled=true);
+    bank.querySelectorAll("button").forEach(b=>b.disabled=true);
+
+    let body = "";
+    if(!ok){
+      const cm = countWords(mine), ca = countWords(it.ans);
+      const extra = [], missing = [];
+      Object.keys(cm).forEach(t=>{for(let i=0;i<cm[t]-(ca[t]||0);i++) extra.push(t);});
+      Object.keys(ca).forEach(t=>{for(let i=0;i<ca[t]-(cm[t]||0);i++) missing.push(t);});
+      body += `<p>Your sentence: ${esc(mine.join(" "))}</p>`;
+      const seen = new Set();
+      extra.forEach(t=>{
+        if(seen.has(t)) return; seen.add(t);
+        const d = disObjs.find(x=>x.t===t);
+        let msg = d && d.e;
+        if(!msg && it.v3) msg = `<i>${esc(t)}</i> is not V3. Use <b>${esc(it.v3)}</b>.`;
+        if(!msg) msg = `<i>${esc(t)}</i> is not needed here.`;
+        body += `<p>✗ <b>${esc(t)}</b>: ${msg}</p>`;
+      });
+      if(missing.length) body += `<p>Missing: <b>${[...new Set(missing)].map(esc).join(", ")}</b></p>`;
+      if(!extra.length && !missing.length) body += `<p>Right words, wrong order. ${sec.order}</p>`;
+    }
+    body += `<p class="ans">${esc(it.ans.join(" "))}</p><p>${it.why}</p>`;
+    card.appendChild(feedback(ok, ok?"✓ Correct":"✗ Not quite", body));
+    card.appendChild(nextBtn());
+    progress();
+  };
+}
+
+/* ---- end screen ---- */
+function renderEnd(){
+  barfill.style.width = "100%";
+  const card = el("div","card"); app.appendChild(card);
+  if(retryMode){
+    card.appendChild(el("div","tag","Finished"));
+    card.appendChild(el("div","prompt","Missed items done."));
+    card.appendChild(el("p","hint","Your first-try score is unchanged. Practise again any time."));
+    const b = el("button","primary","Start again"); b.onclick=start; card.appendChild(b);
+    return;
+  }
+  const right = Object.keys(firstTry).filter(k=>firstTry[k]).length;
+  card.appendChild(el("div","tag","Your result"));
+  card.appendChild(el("div","score",`${right} / ${totalQ}`));
+  const rows = SECTIONS.map(s=>{
+    const r = s.items.filter((_,i)=>firstTry[s.id+"-"+i]).length;
+    return `<tr><td>${s.title}</td><td>${r} / ${s.items.length}</td></tr>`;
+  }).join("");
+  card.appendChild(el("table",null,rows));
+  const missed = totalQ - right;
+  if(missed>0){
+    const b = el("button","primary",`Practise the ${missed} I missed`); b.onclick=startRetry; card.appendChild(b);
+  } else {
+    card.appendChild(el("p",null,"Perfect. No mistakes."));
+  }
+  const again = el("button","secondary","Start again"); again.onclick=start; card.appendChild(again);
+}
+
+start();
+</script>
+</body>
+</html>
