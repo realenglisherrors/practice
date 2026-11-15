@@ -72,6 +72,20 @@ a.row:hover,a.row:focus{border-color:var(--gold);outline:none;transform:translat
 .feat b{display:block;font-size:.9rem;margin-bottom:3px}
 .feat span{font-size:.8rem;color:var(--dim)}
 .feat .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--gold-soft);color:#7a5f14;font-weight:700;font-size:.78rem;align-items:center;justify-content:center;margin-bottom:8px}
+.tl{position:relative;list-style:none;margin:6px 0 0 6px;padding:0}
+.tl:before{content:"";position:absolute;left:15px;top:14px;bottom:14px;width:2px;background:linear-gradient(var(--gold),var(--border))}
+.tl li{position:relative;display:flex;align-items:center;gap:14px;padding:7px 0}
+.dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;background:var(--bg);border:2px solid var(--border);color:#9aa4b2;z-index:1}
+.tl .done .dot{background:var(--navy);border-color:var(--navy);color:#fff}
+.tl .cur .dot{background:var(--gold);border-color:var(--gold);color:var(--navy);box-shadow:0 0 0 5px var(--gold-soft)}
+.tl .lbl{font-size:.88rem;color:#8b97a8}
+.tl .done .lbl{color:var(--dim)}
+a.tl-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.88rem;padding:9px 18px;border-radius:999px;background:var(--navy);color:#fff;transition:transform .12s}
+a.tl-btn:hover,a.tl-btn:focus{transform:translateX(2px);outline:none;background:var(--navy2)}
+a.tl-btn.cur{background:var(--gold);color:var(--navy)}
+.tl .soon{font-size:.7rem;color:#aab3c0;margin-left:2px}
+.tl .fixnode .dot{border-color:var(--gold);color:#9a7a1c;background:var(--gold-soft)}
+.tl .fixnode .lbl{color:#8a6d1c;font-weight:600}
 footer{text-align:center;padding:8px 20px 40px;font-size:.72rem;color:#9aa4b2;letter-spacing:.12em;text-transform:uppercase}
 """
 
@@ -159,11 +173,38 @@ for st in students:
             '<p class="lede">This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place.</p>'
             f'{btns}</div></div></header><main class="main">')
     if weekly:
-        out += f'<div class="sec"><h2>This week</h2></div>{card_html(weekly[0][1], "../../")}'
-        if len(weekly) > 1:
-            n = len(weekly) - 1
-            out += f'<div class="sec"><h2>Your archive</h2><small>{n} earlier week{"s" if n != 1 else ""}</small></div><div class="rows">'
-            out += "".join(row_html(c, k, "../../") for k, c in weekly[1:])
+        cur_cycle = max(k[0] for k, _ in weekly)
+        this = weekly[0]
+        out += f'<div class="sec"><h2>This week</h2></div>{card_html(this[1], "../../")}'
+        total = int(st.get("sessions", 12))
+        bywk = {k[1]: c for k, c in weekly if k[0] == cur_cycle}
+        latest = max(bywk)
+        out += f'<div class="sec"><h2>Your {total} sessions</h2><small>Homework appears after each class</small></div><ol class="tl">'
+        for n in range(1, total + 1):
+            c = bywk.get(n)
+            if c:
+                is_cur = (n == latest)
+                cls = "cur" if is_cur else "done"
+                inner = (f'<a class="tl-btn{" cur" if is_cur else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a>')
+                mark = "&#10003;" if not is_cur else str(n)
+            elif n < latest:
+                cls, inner, mark = "done", f'<span class="lbl">Session {n} Homework</span><span class="soon">done in class</span>', "&#10003;"
+            else:
+                cls, inner, mark = "", f'<span class="lbl">Session {n} Homework</span>', str(n)
+            out += f'<li class="{cls}"><span class="dot">{mark}</span>{inner}</li>'
+        fix_old = bool(fix) and int(st.get("fixfile_cycle", cur_cycle)) < cur_cycle
+        if fix and not fix_old:
+            out += f'<li class="fixnode"><span class="dot">&#9733;</span><a class="tl-btn cur" href="../../{html.escape(fix)}">Your Fix File &rarr;</a></li>'
+        else:
+            out += '<li class="fixnode"><span class="dot">&#9733;</span><span class="lbl">Your Fix File</span><span class="soon">yours when you finish</span></li>'
+        out += "</ol>"
+        older = [(k, c) for k, c in weekly if k[0] < cur_cycle]
+        if older or fix_old:
+            out += f'<div class="sec"><h2>Your archive</h2><small>Previous cycle{"s" if cur_cycle > 2 else ""}</small></div><div class="rows">'
+            if fix_old:
+                out += (f'<a class="row" href="../../{html.escape(fix)}"><span class="badge alt">&#9733;</span>'
+                        f'<span class="wk">Cycle {st["fixfile_cycle"]} Fix File</span><span class="sub">Final review</span><span class="go">&rarr;</span></a>')
+            out += "".join(row_html(c, k, "../../") for k, c in older)
             out += "</div>"
     if extra:
         out += '<div class="sec"><h2>Extra practice</h2></div><div class="rows">'

@@ -64,6 +64,20 @@ a.row:hover,a.row:focus{border-color:var(--gold);outline:none;transform:translat
 .feat b{display:block;font-size:.9rem;margin-bottom:3px}
 .feat span{font-size:.8rem;color:var(--dim)}
 .feat .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--gold-soft);color:#7a5f14;font-weight:700;font-size:.78rem;align-items:center;justify-content:center;margin-bottom:8px}
+.tl{position:relative;list-style:none;margin:6px 0 0 6px;padding:0}
+.tl:before{content:"";position:absolute;left:15px;top:14px;bottom:14px;width:2px;background:linear-gradient(var(--gold),var(--border))}
+.tl li{position:relative;display:flex;align-items:center;gap:14px;padding:7px 0}
+.dot{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;background:var(--bg);border:2px solid var(--border);color:#9aa4b2;z-index:1}
+.tl .done .dot{background:var(--navy);border-color:var(--navy);color:#fff}
+.tl .cur .dot{background:var(--gold);border-color:var(--gold);color:var(--navy);box-shadow:0 0 0 5px var(--gold-soft)}
+.tl .lbl{font-size:.88rem;color:#8b97a8}
+.tl .done .lbl{color:var(--dim)}
+a.tl-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600;font-size:.88rem;padding:9px 18px;border-radius:999px;background:var(--navy);color:#fff;transition:transform .12s}
+a.tl-btn:hover,a.tl-btn:focus{transform:translateX(2px);outline:none;background:var(--navy2)}
+a.tl-btn.cur{background:var(--gold);color:var(--navy)}
+.tl .soon{font-size:.7rem;color:#aab3c0;margin-left:2px}
+.tl .fixnode .dot{border-color:var(--gold);color:#9a7a1c;background:var(--gold-soft)}
+.tl .fixnode .lbl{color:#8a6d1c;font-weight:600}
 footer{text-align:center;padding:8px 20px 40px;font-size:.72rem;color:#9aa4b2;letter-spacing:.12em;text-transform:uppercase}
 </style></head><body>
 <header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors"><div><p class="eyebrow">Your personal page</p><h1>Hi, <em>Laura</em></h1><p class="lede">This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place.</p></div></div></header><main class="main"><div class="sec"><h2>Extra practice</h2></div><div class="rows"><a class="row" href="../../exercises/laura%20tense%20practice.html"><span class="badge alt">&#9733;</span><span class="wk">Tense Practice</span><span class="sub">Practice</span><span class="go">&rarr;</span></a></div></main><footer>Real students. Real errors. Real fixes.</footer></body></html>
