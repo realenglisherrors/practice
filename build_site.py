@@ -218,6 +218,22 @@ for _st in students:
     _st["slug"] = slug_for(_st["name"])
 assert len({s["slug"] for s in students}) == len(students), "two students normalise to the same name"
 
+MEET_PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your class</title><style>body{font-family:system-ui,sans-serif;background:#1A2E48;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;text-align:center;padding:24px}
+a{display:inline-block;margin-top:18px;padding:14px 26px;border-radius:999px;background:#C9A84C;color:#1A2E48;font-weight:700;text-decoration:none;font-size:1.05rem}</style></head>
+<body><div><h1 style="font-weight:600;margin:0 0 6px">Joining your class&hellip;</h1><p style="opacity:.8;margin:0">If nothing happens, tap the button.</p>
+<a id="go" href="__URL__">Open Google Meet</a></div>
+<script>setTimeout(function(){location.replace(document.getElementById("go").href)},400)</script></body></html>"""
+os.makedirs(f"{ROOT}/private/meet", exist_ok=True)
+for _f in os.listdir(f"{ROOT}/private/meet"):
+    os.remove(f"{ROOT}/private/meet/{_f}")
+_lines = []
+for _st in students:
+    if _st["meet"]:
+        open(f"{ROOT}/private/meet/meet-{_st['id']}.html", "w").write(MEET_PAGE.replace("__URL__", html.escape(_st["meet"], quote=True)))
+        _lines.append(f"meet-{_st['id']}|{_st['name']}")
+open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
+
 shutil.rmtree(f"{ROOT}/s", ignore_errors=True)
 for st in students:
     mine = [c for c in cards if c["student"] == st["id"]]
@@ -228,7 +244,7 @@ for st in students:
     out = HEAD.format(robots='<meta name="robots" content="noindex">\n', title=f"{esc} · Real English Errors", css=CSS)
     btns = ""
     if st["meet"]:
-        btns += f'<a class="btn" href="{html.escape(st["meet"])}" target="_blank" rel="noopener"><i></i>Join my class on Google Meet</a>'
+        btns += f'<a class="btn" href="../../exercises/meet-{st["id"]}.html"><i></i>Join my class on Google Meet</a>'
     fix_is_old = bool(fix) and bool(weekly) and int(st.get("fixfile_cycle", 1)) < max(k[0] for k, _ in weekly)
     if fix and not fix_is_old:
         btns += f'<a class="btn gold" href="../../{html.escape(fix)}">Open my Fix File</a>'
