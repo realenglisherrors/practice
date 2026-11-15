@@ -2,16 +2,16 @@
 """Generates index.html and one page per student (s/<slug>/index.html).
 
 Sources of truth:
-  site/students.json  - id, name, slug, meet (Google Meet link, "" = hidden)
-  site/cards.json     - one entry per exercise card (append new ones at the end)
+  private/students.json  - id, name, slug, meet (Google Meet link), fixfile (e.g. exercises/mkfixfilefinal.html); "" = hidden
+  private/cards.json     - one entry per exercise card (append new ones at the end)
 
 Run:  python3 build_site.py
 """
 import json, re, html, os, shutil
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-students = json.load(open(f"{ROOT}/site/students.json"))
-cards = json.load(open(f"{ROOT}/site/cards.json"))
+students = json.load(open(f"{ROOT}/private/students.json"))
+cards = json.load(open(f"{ROOT}/private/cards.json"))
 
 CSS = """
 :root{--bg:#F2F4F7;--card:#fff;--navy:#1A2E48;--gold:#C9A84C;--dim:#6B7A8D;--border:#E4E8EF;
@@ -28,6 +28,8 @@ display:flex;flex-direction:column;align-items:center;padding:32px 20px 64px}
 .hero p{font-size:.78rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-top:10px}
 .meet{display:inline-flex;align-items:center;gap:8px;margin-top:16px;padding:10px 18px;border-radius:999px;background:var(--navy);
 color:#fff;text-decoration:none;font-weight:600;font-size:.85rem;letter-spacing:.02em}
+.meet.fix{margin-left:8px;background:var(--gold);color:var(--navy)}
+.meet.fix i{background:var(--navy)}
 .meet:hover,.meet:focus{background:#25406a;outline:none}
 .meet i{width:9px;height:9px;border-radius:50%;background:var(--gold);display:inline-block}
 @media(max-width:560px){.hero{flex-direction:column;text-align:center;gap:18px}.hero img{width:150px}}
@@ -101,12 +103,15 @@ tiles = []
 for st in students:
     mine = [c for c in cards if c["student"] == st["id"]]
     weekly = sorted(((week_key(c), c) for c in mine if week_key(c)), key=lambda x: x[0], reverse=True)
-    extra = [c for c in mine if not week_key(c)]
+    fix = st.get("fixfile", "")
+    extra = [c for c in mine if not week_key(c) and c["href"] != fix]
     esc = html.escape(st["name"])
     out = HEAD.format(robots='<meta name="robots" content="noindex">\n', title=f"{esc} · Real English Errors", css=CSS)
     meet = (f'<a class="meet" href="{html.escape(st["meet"])}" target="_blank" rel="noopener"><i></i>Join our class on Google Meet</a>'
             if st["meet"] else "")
-    out += (f'<a class="back" href="../../">← All students</a><div class="hero">'
+    if fix:
+        meet += (f'<a class="meet fix" href="../../{html.escape(fix)}"><i></i>My Fix File</a>')
+    out += (f'<div class="hero">'
             f'<img src="../../logo-vertical.png" alt="Real English Errors">'
             f'<div><h1>{esc}&rsquo;s <em>exercises</em></h1><p>Real students. Real errors. Real fixes.</p>{meet}</div></div>')
     if weekly:
@@ -127,10 +132,9 @@ for st in students:
     tiles.append(f'<a class="tile" href="s/{st["slug"]}/"><span class="name">{esc}</span>'
                  f'<span class="meta">{len(mine)} exercises · {last}</span></a>')
 
-tiles.sort(key=lambda t: re.search(r'class="name">(.*?)<', t).group(1))
-idx = HEAD.format(robots="", title="Real English Errors", css=CSS)
+idx = HEAD.format(robots='<meta name="robots" content="noindex">\n', title="Real English Errors", css=CSS)
 idx += ('<div class="hero"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes.">'
-        '<div><h1>Let&rsquo;s knock out <em>these errors</em></h1><p>Find your name to see your exercises</p></div></div>'
-        f'<div class="tiles">{"".join(tiles)}</div>' + TAIL)
+        '<div><h1>Let&rsquo;s knock out <em>these errors</em></h1><p>Open the personal link your teacher sent you</p>'
+        '<a class="meet" href="https://www.realenglisherrors.com">Go to realenglisherrors.com</a></div></div>' + TAIL)
 open(f"{ROOT}/index.html", "w").write(idx)
 print(f"Built index + {len(students)} student pages, {len(cards)} cards")
