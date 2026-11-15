@@ -63,6 +63,14 @@ details.arch summary:focus-visible{outline:2px solid var(--gold);outline-offset:
 .hl li{position:relative;padding-left:22px;font-size:.88rem;color:#3f4f66;line-height:1.5}
 .hl li:before{content:"";position:absolute;left:3px;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
 .hl li b{color:var(--navy);margin-right:4px}
+.promo{margin-top:40px;background:linear-gradient(135deg,#1A2E48,#2c4a7c);color:#fff;border-radius:18px;padding:26px 26px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.promo h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.9rem;font-weight:600;line-height:1.1;margin-top:2px}
+.promo .pl{color:rgba(255,255,255,.82);margin-top:10px;font-size:.95rem}
+.promo .pl em{color:var(--gold);font-style:italic}
+.promo .hl li{color:rgba(255,255,255,.9)}
+.promo .hl li b{color:#fff}
+.promo .cta{background:var(--gold);color:var(--navy);text-decoration:none;margin-top:20px}
+.promo .cta:hover{background:#d6b65a}
 .rows{display:flex;flex-direction:column;gap:8px}
 a.row{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 16px;transition:border-color .15s,transform .15s}
 a.row:hover,a.row:focus{border-color:var(--gold);outline:none;transform:translateX(2px)}
@@ -154,6 +162,15 @@ def highlights(desc):
     return f'<ul class="hl">{lis}</ul>'
 
 
+PROMO = """<section class="promo"><p class="eyebrow">The 12-session program</p>
+<h2>Ready to fix your errors for good?</h2>
+<p class="pl">Practice helps. The program goes further, because everything is built from <em>your</em> own mistakes.</p>
+<ul class="hl"><li><b>12 one-to-one sessions</b> of 50 minutes each</li>
+<li><b>Your own homework page</b> after every class, made from your errors</li>
+<li><b>A take-home Fix File</b> with guided repetition, so the corrections stay</li></ul>
+<a class="cta" href="https://www.realenglisherrors.com">See how the program works &rarr;</a></section>"""
+
+
 def display_title(c):
     k = week_key(c)
     return f"Session {k[1]} Homework" if k else c["title"]
@@ -216,9 +233,12 @@ for st in students:
     if fix and not fix_is_old:
         btns += f'<a class="btn gold" href="../../{html.escape(fix)}">Open my Fix File</a>'
     btns = f'<div class="btns">{btns}</div>' if btns else ""
+    on_cycle = bool(weekly)
+    lede = ("This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place."
+            if on_cycle else "Your practice exercises, all in one place.")
     out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
-            '<p class="lede">This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place.</p>'
+            f'<p class="lede">{lede}</p>'
             f'{btns}</div></div></header><main class="main">')
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
@@ -259,10 +279,12 @@ for st in students:
                         f'<span class="wk">Cycle {st["fixfile_cycle"]} Fix File</span><span class="sub">Final review</span><span class="go">&rarr;</span></a>')
             out += "".join(row_html(c, k, "../../") for k, c in older)
             out += "</div></details>"
-    if extra:
-        out += '<div class="sec"><h2>Extra practice</h2></div><div class="rows">'
+    if extra and (not on_cycle or st.get("show_practice")):
+        out += '<div class="sec"><h2>Practice</h2></div><div class="rows">'
         out += "".join(row_html(c, None, "../../") for c in extra)
         out += "</div>"
+    if not on_cycle:
+        out += PROMO
     out += "</main>" + TAIL
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
