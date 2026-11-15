@@ -102,6 +102,8 @@ TAIL = '<footer>Real students. Real errors. Real fixes.</footer></body></html>\n
 
 
 def week_key(card):
+    if "week" in card:
+        return (int(card.get("cycle", 1)), int(card["week"]))
     m = re.match(r"^[A-Za-z]*?(\d*)W(\d+)$", card["title"], re.I)
     if not m or card["tag"] != "Homework":
         return None
@@ -113,10 +115,15 @@ def week_label(k):
     return f"Week {wk}" if cycle == 1 else f"Cycle {cycle} · Week {wk}"
 
 
+def display_title(c):
+    k = week_key(c)
+    return f"Session {k[1]} Homework" if k else c["title"]
+
+
 def card_html(c, href_prefix):
     chips = "".join(f'<span class="chip">{x}</span>' for x in c["chips"])
     return (f'<a class="hero-card" href="{href_prefix}{c["href"]}"><span class="now">This week</span>'
-            f'<div class="title">{c["title"]}</div><div class="subtitle">{c["subtitle"]}</div>'
+            f'<div class="title">{display_title(c)}</div><div class="subtitle">{c["subtitle"]}</div>'
             f'<p class="desc">{c["desc"]}</p><div class="chips">{chips}</div>'
             f'<span class="cta">Start this week&rsquo;s homework &rarr;</span></a>')
 
@@ -125,11 +132,11 @@ def row_html(c, k, href_prefix):
     # k: (cycle, week) or None for extra practice
     if k:
         badge = f'<span class="badge">{k[1]}</span>' if k[0] == 1 else f'<span class="badge alt">{k[0]}&middot;{k[1]}</span>'
-        label = f"Week {k[1]}" if k[0] == 1 else f"Cycle {k[0]} &middot; Week {k[1]}"
+        label = f"Session {k[1]}" if k[0] == 1 else f"Cycle {k[0]} &middot; Session {k[1]}"
     else:
         badge = '<span class="badge alt">&#9733;</span>'
         label = c["title"]
-    sub = c["title"] if k else c["tag"]
+    sub = "Homework" if k else c["tag"]
     return (f'<a class="row" href="{href_prefix}{c["href"]}">{badge}<span class="wk">{label}</span>'
             f'<span class="sub">{sub}</span><span class="go">&rarr;</span></a>')
 
