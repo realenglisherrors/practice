@@ -212,7 +212,8 @@ for st in students:
     btns = ""
     if st["meet"]:
         btns += f'<a class="btn" href="{html.escape(st["meet"])}" target="_blank" rel="noopener"><i></i>Join my class on Google Meet</a>'
-    if fix:
+    fix_is_old = bool(fix) and bool(weekly) and int(st.get("fixfile_cycle", 1)) < max(k[0] for k, _ in weekly)
+    if fix and not fix_is_old:
         btns += f'<a class="btn gold" href="../../{html.escape(fix)}">Open my Fix File</a>'
     btns = f'<div class="btns">{btns}</div>' if btns else ""
     out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
