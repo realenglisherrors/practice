@@ -84,6 +84,7 @@ a.tl-btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;fon
 a.tl-btn:hover,a.tl-btn:focus{transform:translateX(2px);outline:none;background:var(--navy2)}
 a.tl-btn.cur{background:var(--gold);color:var(--navy)}
 .tl .soon{font-size:.7rem;color:#aab3c0;margin-left:2px}
+.tl .note{padding-top:0}.tl .note .dot{visibility:hidden;height:0}.tl .note .soon{margin-left:0;max-width:30em;line-height:1.4}
 .tl .fixnode .dot{border-color:var(--gold);color:#9a7a1c;background:var(--gold-soft)}
 .tl .fixnode .lbl{color:#8a6d1c;font-weight:600}
 footer{text-align:center;padding:8px 20px 40px;font-size:.72rem;color:#9aa4b2;letter-spacing:.12em;text-transform:uppercase}
@@ -176,10 +177,10 @@ for st in students:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
         out += f'<div class="sec"><h2>This week</h2></div>{card_html(this[1], "../../")}'
-        total = int(st.get("sessions", 12))
+        total = int(st.get("homeworks", 10))
         bywk = {k[1]: c for k, c in weekly if k[0] == cur_cycle}
         latest = max(bywk)
-        out += f'<div class="sec"><h2>Your {total} sessions</h2><small>Homework appears after each class</small></div><ol class="tl">'
+        out += f'<div class="sec"><h2>Your 12 sessions</h2><small>Homework appears after each class</small></div><ol class="tl">'
         for n in range(1, total + 1):
             c = bywk.get(n)
             if c:
@@ -194,9 +195,11 @@ for st in students:
             out += f'<li class="{cls}"><span class="dot">{mark}</span>{inner}</li>'
         fix_old = bool(fix) and int(st.get("fixfile_cycle", cur_cycle)) < cur_cycle
         if fix and not fix_old:
-            out += f'<li class="fixnode"><span class="dot">&#9733;</span><a class="tl-btn cur" href="../../{html.escape(fix)}">Your Fix File &rarr;</a></li>'
+            out += (f'<li class="fixnode"><span class="dot">&#9733;</span><a class="tl-btn cur" href="../../{html.escape(fix)}">Sessions 11 &amp; 12: Your Fix File &rarr;</a></li>'
+                    '<li class="note"><span class="dot"></span><span class="soon">Our final production push: no new homework, just your Fix File.</span></li>')
         else:
-            out += '<li class="fixnode"><span class="dot">&#9733;</span><span class="lbl">Your Fix File</span><span class="soon">yours when you finish</span></li>'
+            out += ('<li class="fixnode"><span class="dot">&#9733;</span><span class="lbl">Sessions 11 &amp; 12: Your Fix File</span></li>'
+                    '<li class="note"><span class="dot"></span><span class="soon">Opens after session 11. We use it in class as a final production push of all your errors, with no new homework.</span></li>')
         out += "</ol>"
         older = [(k, c) for k, c in weekly if k[0] < cur_cycle]
         if older or fix_old:
