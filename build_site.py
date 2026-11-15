@@ -7,7 +7,7 @@ Sources of truth:
 
 Run:  python3 build_site.py
 """
-import json, re, html, os, shutil
+import json, re, html, os, shutil, hashlib, secrets, unicodedata
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 students = json.load(open(f"{ROOT}/private/students.json"))
@@ -98,6 +98,27 @@ def row_html(c, label, href_prefix):
             f'<span class="sub">{c["title"]}</span><span class="go">→</span></a>')
 
 
+SALT_FILE = f"{ROOT}/private/salt.txt"
+if not os.path.exists(SALT_FILE):
+    open(SALT_FILE, "w").write(secrets.token_hex(16))
+SALT = open(SALT_FILE).read().strip()
+
+
+def norm(name):
+    # must match the JS normalisation on the landing page
+    n = unicodedata.normalize("NFD", name)
+    n = "".join(ch for ch in n if not unicodedata.combining(ch)).lower().replace("\u0131", "i")
+    return re.sub(r"[^a-z0-9]", "", n)
+
+
+def slug_for(name):
+    return hashlib.sha256((SALT + ":" + norm(name)).encode()).hexdigest()[:16]
+
+
+for _st in students:
+    _st["slug"] = slug_for(_st["name"])
+assert len({s["slug"] for s in students}) == len(students), "two students normalise to the same name"
+
 shutil.rmtree(f"{ROOT}/s", ignore_errors=True)
 tiles = []
 for st in students:
@@ -132,9 +153,29 @@ for st in students:
     tiles.append(f'<a class="tile" href="s/{st["slug"]}/"><span class="name">{esc}</span>'
                  f'<span class="meta">{len(mine)} exercises · {last}</span></a>')
 
+LANDING = """<div class="hero"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes.">
+<div><h1>Let&rsquo;s knock out <em>these errors</em></h1><p>Type your name to open your exercises</p>
+<form id="f" class="enter" autocomplete="off"><input id="n" type="text" placeholder="Your name" aria-label="Your name" autocapitalize="words" required>
+<button type="submit">Open my page</button></form><p id="msg" class="msg" role="alert"></p></div></div>
+<style>.enter{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.enter input{flex:1;min-width:180px;font:inherit;font-size:1rem;padding:11px 16px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--navy)}
+.enter input:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.enter button{font:inherit;font-weight:600;font-size:.9rem;padding:11px 20px;border:0;border-radius:999px;background:var(--navy);color:#fff;cursor:pointer}
+.enter button:hover{background:#25406a}
+.msg{min-height:1.2em;margin-top:10px!important;text-transform:none!important;letter-spacing:0!important;color:#b0413e!important}</style>
+<script>
+var SALT="__SALT__";
+function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\u0131/g,"i").replace(/[^a-z0-9]/g,"");}
+async function slug(s){var d=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(SALT+":"+norm(s)));
+return Array.from(new Uint8Array(d)).map(function(x){return x.toString(16).padStart(2,"0")}).join("").slice(0,16);}
+document.getElementById("f").addEventListener("submit",async function(e){
+e.preventDefault();var msg=document.getElementById("msg");msg.textContent="";
+var v=document.getElementById("n").value;if(!norm(v)){return;}
+try{var u="s/"+await slug(v)+"/";var r=await fetch(u,{cache:"no-store"});
+if(r.ok){location.href=u;}else{msg.textContent="We couldn\u2019t find that name. Check the spelling, or ask Bianca.";}}
+catch(x){msg.textContent="Something went wrong. Please try again.";}});
+</script>"""
 idx = HEAD.format(robots='<meta name="robots" content="noindex">\n', title="Real English Errors", css=CSS)
-idx += ('<div class="hero"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes.">'
-        '<div><h1>Let&rsquo;s knock out <em>these errors</em></h1><p>Open the personal link your teacher sent you</p>'
-        '<a class="meet" href="https://www.realenglisherrors.com">Go to realenglisherrors.com</a></div></div>' + TAIL)
+idx += LANDING.replace("__SALT__", SALT) + TAIL
 open(f"{ROOT}/index.html", "w").write(idx)
 print(f"Built index + {len(students)} student pages, {len(cards)} cards")

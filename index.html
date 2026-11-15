@@ -52,4 +52,25 @@ a.row:hover,a.row:focus{border-color:#b0bcd4;outline:none}
 .back:hover{color:var(--navy)}
 footer{margin-top:44px;font-size:.7rem;color:#aab;text-align:center;letter-spacing:.05em}
 </style></head><body><div class="wrap">
-<div class="hero"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes."><div><h1>Let&rsquo;s knock out <em>these errors</em></h1><p>Open the personal link your teacher sent you</p><a class="meet" href="https://www.realenglisherrors.com">Go to realenglisherrors.com</a></div></div></div><footer>Real English Errors</footer></body></html>
+<div class="hero"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes.">
+<div><h1>Let&rsquo;s knock out <em>these errors</em></h1><p>Type your name to open your exercises</p>
+<form id="f" class="enter" autocomplete="off"><input id="n" type="text" placeholder="Your name" aria-label="Your name" autocapitalize="words" required>
+<button type="submit">Open my page</button></form><p id="msg" class="msg" role="alert"></p></div></div>
+<style>.enter{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.enter input{flex:1;min-width:180px;font:inherit;font-size:1rem;padding:11px 16px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--navy)}
+.enter input:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+.enter button{font:inherit;font-weight:600;font-size:.9rem;padding:11px 20px;border:0;border-radius:999px;background:var(--navy);color:#fff;cursor:pointer}
+.enter button:hover{background:#25406a}
+.msg{min-height:1.2em;margin-top:10px!important;text-transform:none!important;letter-spacing:0!important;color:#b0413e!important}</style>
+<script>
+var SALT="38ef488b1db5b90355d5466d40e265c8";
+function norm(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/ı/g,"i").replace(/[^a-z0-9]/g,"");}
+async function slug(s){var d=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(SALT+":"+norm(s)));
+return Array.from(new Uint8Array(d)).map(function(x){return x.toString(16).padStart(2,"0")}).join("").slice(0,16);}
+document.getElementById("f").addEventListener("submit",async function(e){
+e.preventDefault();var msg=document.getElementById("msg");msg.textContent="";
+var v=document.getElementById("n").value;if(!norm(v)){return;}
+try{var u="s/"+await slug(v)+"/";var r=await fetch(u,{cache:"no-store"});
+if(r.ok){location.href=u;}else{msg.textContent="We couldn’t find that name. Check the spelling, or ask Bianca.";}}
+catch(x){msg.textContent="Something went wrong. Please try again.";}});
+</script></div><footer>Real English Errors</footer></body></html>
