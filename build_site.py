@@ -25,6 +25,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .band img{width:168px;height:auto;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.28);flex-shrink:0}
 .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
 .band h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.2rem,6.5vw,3.3rem);font-weight:600;line-height:1.05;letter-spacing:.005em}
+.band h1.hi:after{content:"";display:block;width:54px;height:3px;border-radius:3px;background:var(--gold);margin:12px 0 0}
+@media(max-width:600px){.band h1.hi:after{margin-left:auto;margin-right:auto}}
 .band h1 em{font-style:italic;color:var(--gold)}
 .lede{font-size:.98rem;color:rgba(255,255,255,.82);margin-top:12px;max-width:34em}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
@@ -206,7 +208,7 @@ for st in students:
         btns += f'<a class="btn gold" href="../../{html.escape(fix)}">Open my Fix File</a>'
     btns = f'<div class="btns">{btns}</div>' if btns else ""
     out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
-            f'<div><p class="eyebrow">Your personal page</p><h1>Hi, <em>{esc}</em></h1>'
+            f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
             '<p class="lede">This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place.</p>'
             f'{btns}</div></div></header><main class="main">')
     if weekly:
