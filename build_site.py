@@ -51,6 +51,14 @@ a.hero-card:hover,a.hero-card:focus{outline:none;transform:translateY(-2px);box-
 .chip{font-size:.68rem;color:#52627a;padding:3px 10px;border-radius:999px;background:#f1efe8;font-weight:500}
 .cta{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 22px;border-radius:999px;background:var(--navy);color:#fff;font-weight:600;font-size:.9rem}
 .hero-card:hover .cta{background:var(--navy2)}
+details.arch{margin-top:36px}
+details.arch summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding:2px 0}
+details.arch summary::-webkit-details-marker{display:none}
+details.arch summary h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.65rem;font-weight:600}
+details.arch summary small{font-size:.74rem;color:var(--dim);letter-spacing:.04em;margin-left:auto}
+.chev{width:9px;height:9px;border-right:2px solid var(--dim);border-bottom:2px solid var(--dim);transform:rotate(45deg);transition:transform .2s;align-self:center;margin-left:4px;position:relative;top:-2px}
+details.arch[open] .chev{transform:rotate(-135deg);top:2px}
+details.arch summary:focus-visible{outline:2px solid var(--gold);outline-offset:4px;border-radius:6px}
 .hl{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
 .hl li{position:relative;padding-left:22px;font-size:.88rem;color:#3f4f66;line-height:1.5}
 .hl li:before{content:"";position:absolute;left:3px;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
@@ -241,12 +249,15 @@ for st in students:
         out += "</ol>"
         older = [(k, c) for k, c in weekly if k[0] < cur_cycle]
         if older or fix_old:
-            out += f'<div class="sec"><h2>Your archive</h2><small>Previous cycle{"s" if cur_cycle > 2 else ""}</small></div><div class="rows">'
+            n_old = len(older) + (1 if fix_old else 0)
+            out += (f'<details class="arch"><summary><h2>Your archive</h2>'
+                    f'<small>Previous cycle{"s" if cur_cycle > 2 else ""} &middot; {n_old} item{"s" if n_old != 1 else ""}</small>'
+                    f'<span class="chev" aria-hidden="true"></span></summary><div class="rows">')
             if fix_old:
                 out += (f'<a class="row" href="../../{html.escape(fix)}"><span class="badge alt">&#9733;</span>'
                         f'<span class="wk">Cycle {st["fixfile_cycle"]} Fix File</span><span class="sub">Final review</span><span class="go">&rarr;</span></a>')
             out += "".join(row_html(c, k, "../../") for k, c in older)
-            out += "</div>"
+            out += "</div></details>"
     if extra:
         out += '<div class="sec"><h2>Extra practice</h2></div><div class="rows">'
         out += "".join(row_html(c, None, "../../") for c in extra)
