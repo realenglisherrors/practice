@@ -35,7 +35,7 @@ background:#fff;color:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,.18);transiti
 .btn.gold{background:var(--gold)}.btn.gold i{background:var(--navy)}
 @media(max-width:600px){.band{padding:30px 20px 70px}.band-in{flex-direction:column;text-align:center;gap:22px}.band img{width:132px}.btns{justify-content:center}.lede{margin-left:auto;margin-right:auto}}
 .main{max-width:860px;margin:-30px auto 0;padding:0 20px 56px;position:relative;z-index:2}
-.sec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:36px 0 12px}
+.sec{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px;margin:36px 0 12px}
 .main>.sec:first-child{margin-top:46px}
 .sec h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.65rem;font-weight:600}
 .sec small{font-size:.74rem;color:var(--dim);letter-spacing:.04em}
@@ -49,6 +49,10 @@ a.hero-card:hover,a.hero-card:focus{outline:none;transform:translateY(-2px);box-
 .chip{font-size:.68rem;color:#52627a;padding:3px 10px;border-radius:999px;background:#f1efe8;font-weight:500}
 .cta{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:11px 22px;border-radius:999px;background:var(--navy);color:#fff;font-weight:600;font-size:.9rem}
 .hero-card:hover .cta{background:var(--navy2)}
+.hl{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.hl li{position:relative;padding-left:22px;font-size:.88rem;color:#3f4f66;line-height:1.5}
+.hl li:before{content:"";position:absolute;left:3px;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.hl li b{color:var(--navy);margin-right:4px}
 .rows{display:flex;flex-direction:column;gap:8px}
 a.row{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 16px;transition:border-color .15s,transform .15s}
 a.row:hover,a.row:focus{border-color:var(--gold);outline:none;transform:translateX(2px)}
@@ -115,6 +119,31 @@ def week_label(k):
     return f"Week {wk}" if cycle == 1 else f"Cycle {cycle} · Week {wk}"
 
 
+def highlights(desc):
+    """Turn the prose description into a few bullets; fall back to the paragraph."""
+    t = html.unescape(re.sub(r"<[^>]+>", "", desc))
+    m = re.search(r"then practise with (.+?)(?:,? and send| ?\. Then send|\.$)", t, re.I)
+    practice = m.group(1).strip().rstrip(".") if m else ""
+    head = t[: m.start()] if m else t
+    items = []
+    for g in re.finditer(r"\b(vocabulary and expressions|vocabulary|grammar|pronunciation|numbers)\b(?:\s*\(([^)]*)\))?", head, re.I):
+        label = g.group(1).capitalize()
+        body = re.sub(r",?\s*and more\b", "", g.group(2) or "").strip()
+        items.append((label, body))
+    # "vocabulary and grammar" (no brackets) -> two bullets
+    if not items and not practice:
+        return f'<p class="desc">{desc}</p>'
+    if items and not any(x for _, x in items):
+        names = " and ".join(l.lower() for l, _ in items)
+        lis = f"<li><b>Review</b> this week&rsquo;s {names}</li>"
+    else:
+        lis = "".join(f'<li><b>{html.escape(l)}</b>{(" " + html.escape(x)) if x else ""}</li>' for l, x in items)
+    if practice:
+        lis += f'<li><b>Practise</b> {html.escape(practice)}</li>'
+    lis += '<li><b>Finish</b> by sending your results to Bianca by email and WhatsApp</li>'
+    return f'<ul class="hl">{lis}</ul>'
+
+
 def display_title(c):
     k = week_key(c)
     return f"Session {k[1]} Homework" if k else c["title"]
@@ -124,7 +153,7 @@ def card_html(c, href_prefix):
     chips = "".join(f'<span class="chip">{x}</span>' for x in c["chips"])
     return (f'<a class="hero-card" href="{href_prefix}{c["href"]}"><span class="now">This week</span>'
             f'<div class="title">{display_title(c)}</div><div class="subtitle">{c["subtitle"]}</div>'
-            f'<p class="desc">{c["desc"]}</p><div class="chips">{chips}</div>'
+            f'{highlights(c["desc"])}'
             f'<span class="cta">Start this week&rsquo;s homework &rarr;</span></a>')
 
 
