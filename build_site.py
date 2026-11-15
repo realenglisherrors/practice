@@ -180,7 +180,7 @@ for st in students:
         total = int(st.get("homeworks", 10))
         bywk = {k[1]: c for k, c in weekly if k[0] == cur_cycle}
         latest = max(bywk)
-        out += f'<div class="sec"><h2>Your 12 sessions</h2><small>Homework appears after each class</small></div><ol class="tl">'
+        out += f'<div class="sec"><h2>Your 12 sessions</h2><small>Each homework appears here when it&rsquo;s ready</small></div><ol class="tl">'
         for n in range(1, total + 1):
             c = bywk.get(n)
             if c:
@@ -224,7 +224,7 @@ LANDING = """<header class="band"><div class="band-in"><img src="logo-vertical.p
 <p class="hint">Type it the way I write it on your lessons. That&rsquo;s all you need.</p>
 <div class="enter"><input id="n" type="text" placeholder="Your name" autocapitalize="words" required><button type="submit">Open my page</button></div>
 <p id="msg" class="msg" role="alert"></p></form></div>
-<div class="feats"><div class="feat"><span class="n">1</span><b>This week&rsquo;s homework</b><span>Fresh exercises after every class, made for your errors.</span></div>
+<div class="feats"><div class="feat"><span class="n">1</span><b>This week&rsquo;s homework</b><span>New homework is added here when it&rsquo;s ready, made for your errors.</span></div>
 <div class="feat"><span class="n">2</span><b>Every past week</b><span>Come back to any lesson to review it again.</span></div>
 <div class="feat"><span class="n">3</span><b>Your class link</b><span>Join your lessons from the same page.</span></div></div></main>
 <script>
