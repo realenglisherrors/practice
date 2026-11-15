@@ -309,7 +309,6 @@ LANDING = """<header class="band"><div class="band-in"><img src="logo-vertical.p
 <div><p class="eyebrow">Student page</p><h1>Your homework, <em>all in one place</em></h1>
 <p class="lede">Open your personal page to find this week&rsquo;s exercises, every week before it, and your class link.</p></div></div></header>
 <main class="main"><div class="enter-card"><form id="f" autocomplete="off"><label for="n">What&rsquo;s your name?</label>
-<p class="hint">Type it the way I write it on your lessons. That&rsquo;s all you need.</p>
 <div class="enter"><input id="n" type="text" placeholder="Your name" autocapitalize="words" required><button type="submit">Open my page</button></div>
 <p id="msg" class="msg" role="alert"></p></form></div>
 <div class="feats"><div class="feat"><span class="n">1</span><b>This week&rsquo;s homework</b><span>New homework is added here when it&rsquo;s ready, made for your errors.</span></div>
