@@ -250,7 +250,8 @@ for st in students:
         btns += f'<a class="btn gold" href="../../{html.escape(fix)}">Open my Fix File</a>'
     btns = f'<div class="btns">{btns}</div>' if btns else ""
     on_cycle = bool(weekly)
-    lede = ("This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place."
+    lede = (("This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place."
+             if st["meet"] else "This week&rsquo;s homework and every week before it: everything you need between lessons, in one place.")
             if on_cycle else "Your practice exercises, all in one place.")
     out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
@@ -307,13 +308,13 @@ for st in students:
 
 LANDING = """<header class="band"><div class="band-in"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes.">
 <div><p class="eyebrow">Student page</p><h1>Your homework, <em>all in one place</em></h1>
-<p class="lede">Open your personal page to find this week&rsquo;s exercises, every week before it, and your class link.</p></div></div></header>
+<p class="lede">Open your personal page to find this week&rsquo;s exercises, and every week before it.</p></div></div></header>
 <main class="main"><div class="enter-card"><form id="f" autocomplete="off"><label for="n">What&rsquo;s your name?</label>
 <div class="enter"><input id="n" type="text" placeholder="Your name" autocapitalize="words" required><button type="submit">Open my page</button></div>
 <p id="msg" class="msg" role="alert"></p></form></div>
 <div class="feats"><div class="feat"><span class="n">1</span><b>This week&rsquo;s homework</b><span>New homework is added here when it&rsquo;s ready, made for your errors.</span></div>
 <div class="feat"><span class="n">2</span><b>Every past week</b><span>Come back to any lesson to review it again.</span></div>
-<div class="feat"><span class="n">3</span><b>Your class link</b><span>Join your lessons from the same page.</span></div></div></main>
+<div class="feat"><span class="n">3</span><b>Your class link</b><span>If we meet on Google Meet, join your lessons from the same page.</span></div></div></main>
 <script>
 var SALT="__SALT__";
 function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\u0131/g,"i").replace(/[^a-z0-9]/g,"");}
