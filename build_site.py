@@ -239,8 +239,9 @@ os.makedirs(f"{ROOT}/private/meet", exist_ok=True)
 for _f in os.listdir(f"{ROOT}/private/meet"):
     os.remove(f"{ROOT}/private/meet/{_f}")
 _lines = []
+_members = {m for x in students for m in x.get("members", [])}
 for _st in students:
-    if _st["meet"]:
+    if _st["meet"] and _st["id"] not in _members:
         open(f"{ROOT}/private/meet/meet-{_st['id']}.html", "w").write(MEET_PAGE.replace("__URL__", html.escape(_st["meet"], quote=True)))
         _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
