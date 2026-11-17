@@ -7,7 +7,7 @@ Sources of truth:
 
 Run:  python3 build_site.py
 """
-import json, re, html, os, shutil, hashlib, secrets, unicodedata
+import datetime, json, re, html, os, shutil, hashlib, secrets, unicodedata
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 students = json.load(open(f"{ROOT}/private/students.json"))
@@ -31,6 +31,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .pay i{font-style:normal;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
 .pay.due i{background:var(--gold-soft);color:#9a7a1c}
 .pay small{color:var(--dim);display:block;font-size:.8rem}
+.pstrip{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pstrip span{min-width:46px;height:26px;padding:0 8px;border-radius:13px;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--dim);box-sizing:border-box}
+.pstrip .p{background:#2f7d4f;border-color:#2f7d4f;color:#fff;font-weight:700}
+.pstrip .h{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--navy)}
+.pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
 .band h1 em{font-style:italic;color:var(--gold)}
 .lede{font-size:.98rem;color:rgba(255,255,255,.82);margin-top:12px;max-width:34em}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
@@ -264,12 +269,23 @@ for st in students:
     pay = st.get("payment")
     if pay:
         e = html.escape
+        strip = ""
+        pd_, od_ = pay.get("paid_dates", []), pay.get("owed_dates", [])
+        if pd_ or od_:
+            td = datetime.date.today().isoformat()
+            chips = "".join(
+                f'<span class="{"p" if d in pd_ else ""}{" h" if d <= td else ""}" title="{d}: {"paid" if d in pd_ else "not paid yet"}">'
+                f'{d[5:].replace("-", "/")}</span>' for d in sorted(set(pd_) | set(od_)))
+            strip = (f'<div class="pstrip">{chips}</div>'
+                     '<div class="legend">Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.</div>')
         if pay.get("status") == "paid":
-            out += f'<div class="pay"><i>&#10003;</i><div><b>Paid through {e(pay["through"])}</b><small>Thank you!</small></div></div>'
+            head = f'<b>Paid through {e(pay["through"])}</b><small>Thank you!</small>'
         elif pay.get("status") == "via":
-            out += f'<div class="pay"><i>&#10003;</i><div><b>Payments go through {e(pay["via"])}</b></div></div>'
+            head = f'<b>Payments go through {e(pay["via"])}</b>'
         else:
-            out += f'<div class="pay due"><i>!</i><div><b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small></div></div>'
+            head = f'<b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small>'
+        cls = "pay due" if pay.get("status") == "due" else "pay"
+        out += f'<div class="{cls}"><i>{"!" if cls.endswith("due") else "&#10003;"}</i><div>{head}{strip}</div></div>'
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
