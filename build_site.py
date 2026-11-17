@@ -36,6 +36,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .pstrip .p{background:#2f7d4f;border-color:#2f7d4f;color:#fff;font-weight:700}
 .pstrip .h{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--navy)}
 .pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
+.main:has(.duo){max-width:1040px}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
 @media(max-width:700px){.duo{grid-template-columns:1fr}}
 .band h1 em{font-style:italic;color:var(--gold)}
@@ -282,15 +283,34 @@ for st in students:
         out += '<div class="duo">'
         for m in names:
             wk = sorted(((week_key(c), c) for c in cards if c["student"] == m["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
-            out += f'<section><div class="sec"><h2>{html.escape(m["name"])}</h2></div>'
+            out += f'<section class="col"><div class="sec"><h2>{html.escape(m["name"])}</h2></div>'
             if wk:
+                cyc = max(k[0] for k, _ in wk)
                 out += card_html(wk[0][1], "../../")
-                if len(wk) > 1:
-                    out += '<div class="rows" style="margin-top:14px">' + "".join(row_html(c, k, "../../") for k, c in wk[1:]) + "</div>"
+                bywk = {k[1]: c for k, c in wk if k[0] == cyc}
+                latest = max(bywk)
+                total = int(m.get("homeworks", 10))
+                out += '<div class="sec"><h2>12 sessions</h2></div><ol class="tl">'
+                for n in range(1, total + 1):
+                    c = bywk.get(n)
+                    if c:
+                        cur_ = n == latest
+                        out += (f'<li class="{"cur" if cur_ else "done"}"><span class="dot">{str(n) if cur_ else "&#10003;"}</span>'
+                                f'<a class="tl-btn{" cur" if cur_ else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a></li>')
+                    elif n < latest:
+                        out += f'<li class="done"><span class="dot">&#10003;</span><span class="lbl">Session {n} Homework</span><span class="soon">done in class</span></li>'
+                    else:
+                        out += f'<li><span class="dot">{n}</span><span class="lbl">Session {n} Homework</span></li>'
+                out += "</ol>"
             else:
                 out += '<p class="desc">Homework appears here when it is ready.</p>'
             out += "</section>"
-        out += "</div></main>" + TAIL
+        out += "</div>"
+        if st["fixfile"]:
+            out += f'<div class="btns" style="margin-top:22px"><a class="btn gold" href="../../{html.escape(st["fixfile"])}">Open our shared Fix File</a></div>'
+        else:
+            out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
+        out += "</main>" + TAIL
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
             os.makedirs(f"{ROOT}/s/{sl}", exist_ok=True)
