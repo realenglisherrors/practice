@@ -19,6 +19,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .band h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.2rem,6.5vw,3.3rem);font-weight:600;line-height:1.05;letter-spacing:.005em}
 .band h1.hi:after{content:"";display:block;width:54px;height:3px;border-radius:3px;background:var(--gold);margin:12px 0 0}
 @media(max-width:600px){.band h1.hi:after{margin-left:auto;margin-right:auto}}
+.pay{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin:0 0 18px;box-shadow:var(--shadow);font-size:.95rem}
+.pay i{font-style:normal;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
+.pay.due i{background:var(--gold-soft);color:#9a7a1c}
+.pay small{color:var(--dim);display:block;font-size:.8rem}
 .band h1 em{font-style:italic;color:var(--gold)}
 .lede{font-size:.98rem;color:rgba(255,255,255,.82);margin-top:12px;max-width:34em}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
