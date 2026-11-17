@@ -35,6 +35,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .pstrip span{min-width:46px;height:26px;padding:0 8px;border-radius:13px;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--dim);box-sizing:border-box}
 .pstrip .p{background:#2f7d4f;border-color:#2f7d4f;color:#fff;font-weight:700}
 .pstrip .h{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--navy)}
+.paybar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--border);box-shadow:0 -4px 18px rgba(26,46,72,.08);padding-bottom:env(safe-area-inset-bottom)}
+.paybar details{max-width:860px;margin:0 auto}
+.paybar summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:.84rem}
+.paybar summary::-webkit-details-marker{display:none}
+.paybar summary i{font-style:normal;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
+.paybar.due summary i{background:var(--gold-soft);color:#9a7a1c}
+.paybar summary small{color:var(--dim);margin-left:auto;font-size:.74rem}
+.paybar .more{padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
+body:has(.paybar){padding-bottom:56px}
 .pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
 .main:has(.duo){max-width:1040px}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
@@ -247,6 +256,31 @@ for _st in students:
         _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
 
+def pay_bar(pay):
+    """Same content as pay_html, but as a slim bar pinned to the bottom (tap to expand)."""
+    e = html.escape
+    if pay.get("status") == "paid":
+        head, sub = f'Paid through {e(pay["through"])}', "Thank you!"
+    elif pay.get("status") == "via":
+        head, sub = f'Payments go through {e(pay["via"])}', ""
+    else:
+        head, sub = "Payment due", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
+    strip = ""
+    pd_, od_ = pay.get("paid_dates", []), pay.get("owed_dates", [])
+    if pd_ or od_:
+        td = datetime.date.today().isoformat()
+        chips = "".join(
+            f'<span class="{"p" if d in pd_ else ""}{" h" if d <= td else ""}" title="{d}: {"paid" if d in pd_ else "not paid yet"}">'
+            f'{d[5:].replace("-", "/")}</span>' for d in sorted(set(pd_) | set(od_)))
+        strip = (f'<div class="pstrip">{chips}</div>'
+                 '<div class="legend">Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.</div>')
+    due = pay.get("status") == "due"
+    more = f'<div class="more">{sub if due else ""}{strip}</div>' if (strip or due) else ""
+    tip = "<small>Details &#9652;</small>" if more else ""
+    return (f'<div class="paybar{" due" if due else ""}"><details><summary><i>{"!" if due else "&#10003;"}</i>'
+            f'<b>{head}</b>{tip}</summary>{more}</details></div>')
+
+
 def pay_html(pay):
     e = html.escape
     strip = ""
@@ -278,8 +312,6 @@ for st in students:
                 f'<div><p class="eyebrow">Your shared page</p><h1 class="hi">Hi, {html.escape(st["name"])}</h1>'
                 '<p class="lede">One page for your shared class: payments for everyone, and a homework column each.</p>'
                 f'{btn}</div></div></header><main class="main">')
-        if st.get("payment"):
-            out += pay_html(st["payment"])
         out += '<div class="duo">'
         for m in names:
             wk = sorted(((week_key(c), c) for c in cards if c["student"] == m["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
@@ -310,7 +342,7 @@ for st in students:
             out += f'<div class="btns" style="margin-top:22px"><a class="btn gold" href="../../{html.escape(st["fixfile"])}">Open our shared Fix File</a></div>'
         else:
             out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
-        out += "</main>" + TAIL
+        out += "</main>" + TAIL.replace("</body>", (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
             os.makedirs(f"{ROOT}/s/{sl}", exist_ok=True)
@@ -339,8 +371,6 @@ for st in students:
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
             f'<p class="lede">{lede}</p>'
             f'{btns}</div></div></header><main class="main">')
-    if st.get("payment"):
-        out += pay_html(st["payment"])
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
@@ -386,7 +416,7 @@ for st in students:
         out += "</div>"
     if not on_cycle:
         out += PROMO
-    out += "</main>" + TAIL
+    out += "</main>" + TAIL.replace("</body>", (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
 
