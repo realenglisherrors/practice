@@ -263,12 +263,13 @@ for st in students:
             f'{btns}</div></div></header><main class="main">')
     pay = st.get("payment")
     if pay:
+        e = html.escape
         if pay.get("status") == "paid":
-            msg = "Paid" + (f" through {html.escape(pay['through'])}" if pay.get("through") else "")
-            out += f'<div class="pay"><i>&#10003;</i><div><b>{msg}</b><small>Thank you!</small></div></div>'
+            out += f'<div class="pay"><i>&#10003;</i><div><b>Paid through {e(pay["through"])}</b><small>Thank you!</small></div></div>'
+        elif pay.get("status") == "via":
+            out += f'<div class="pay"><i>&#10003;</i><div><b>Payments go through {e(pay["via"])}</b></div></div>'
         else:
-            msg = "Payment due" + (f" {html.escape(pay['due'])}" if pay.get("due") else "")
-            out += f'<div class="pay due"><i>!</i><div><b>{msg}</b><small>Message Bianca if you have any questions.</small></div></div>'
+            out += f'<div class="pay due"><i>!</i><div><b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small></div></div>'
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
