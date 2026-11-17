@@ -36,6 +36,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .pstrip .p{background:#2f7d4f;border-color:#2f7d4f;color:#fff;font-weight:700}
 .pstrip .h{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--navy)}
 .pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media(max-width:700px){.duo{grid-template-columns:1fr}}
 .band h1 em{font-style:italic;color:var(--gold)}
 .lede{font-size:.98rem;color:rgba(255,255,255,.82);margin-top:12px;max-width:34em}
 .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
@@ -240,11 +242,57 @@ _lines = []
 for _st in students:
     if _st["meet"]:
         open(f"{ROOT}/private/meet/meet-{_st['id']}.html", "w").write(MEET_PAGE.replace("__URL__", html.escape(_st["meet"], quote=True)))
-        _lines.append(f"meet-{_st['id']}|{_st['name']}")
+        _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
+
+def pay_html(pay):
+    e = html.escape
+    strip = ""
+    pd_, od_ = pay.get("paid_dates", []), pay.get("owed_dates", [])
+    if pd_ or od_:
+        td = datetime.date.today().isoformat()
+        chips = "".join(
+            f'<span class="{"p" if d in pd_ else ""}{" h" if d <= td else ""}" title="{d}: {"paid" if d in pd_ else "not paid yet"}">'
+            f'{d[5:].replace("-", "/")}</span>' for d in sorted(set(pd_) | set(od_)))
+        strip = (f'<div class="pstrip">{chips}</div>'
+                 '<div class="legend">Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.</div>')
+    if pay.get("status") == "paid":
+        head = f'<b>Paid through {e(pay["through"])}</b><small>Thank you!</small>'
+    elif pay.get("status") == "via":
+        head = f'<b>Payments go through {e(pay["via"])}</b>'
+    else:
+        head = f'<b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small>'
+    cls = "pay due" if pay.get("status") == "due" else "pay"
+    return f'<div class="{cls}"><i>{"!" if cls.endswith("due") else "&#10003;"}</i><div>{head}{strip}</div></div>'
+
 
 shutil.rmtree(f"{ROOT}/s", ignore_errors=True)
 for st in students:
+    if st.get("members"):
+        names = [next(x for x in students if x["id"] == m) for m in st["members"]]
+        out = HEAD.format(robots='<meta name="robots" content="noindex">\n', title=f"{html.escape(st['name'])} · Real English Errors", css=CSS)
+        btn = (f'<div class="btns"><a class="btn" href="../../exercises/meet-{st["id"]}.html"><i></i>Join our class on Google Meet</a></div>' if st["meet"] else "")
+        out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
+                f'<div><p class="eyebrow">Your shared page</p><h1 class="hi">Hi, {html.escape(st["name"])}</h1>'
+                '<p class="lede">One page for your shared class: payments for everyone, and a homework column each.</p>'
+                f'{btn}</div></div></header><main class="main">')
+        if st.get("payment"):
+            out += pay_html(st["payment"])
+        out += '<div class="duo">'
+        for m in names:
+            wk = sorted(((week_key(c), c) for c in cards if c["student"] == m["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
+            out += f'<section><div class="sec"><h2>{html.escape(m["name"])}</h2></div>'
+            if wk:
+                out += card_html(wk[0][1], "../../")
+                if len(wk) > 1:
+                    out += '<div class="rows" style="margin-top:14px">' + "".join(row_html(c, k, "../../") for k, c in wk[1:]) + "</div>"
+            else:
+                out += '<p class="desc">Homework appears here when it is ready.</p>'
+            out += "</section>"
+        out += "</div></main>" + TAIL
+        os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
+        open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
+        continue
     mine = [c for c in cards if c["student"] == st["id"]]
     weekly = sorted(((week_key(c), c) for c in mine if week_key(c)), key=lambda x: x[0], reverse=True)
     fix = st.get("fixfile", "")
@@ -266,26 +314,8 @@ for st in students:
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
             f'<p class="lede">{lede}</p>'
             f'{btns}</div></div></header><main class="main">')
-    pay = st.get("payment")
-    if pay:
-        e = html.escape
-        strip = ""
-        pd_, od_ = pay.get("paid_dates", []), pay.get("owed_dates", [])
-        if pd_ or od_:
-            td = datetime.date.today().isoformat()
-            chips = "".join(
-                f'<span class="{"p" if d in pd_ else ""}{" h" if d <= td else ""}" title="{d}: {"paid" if d in pd_ else "not paid yet"}">'
-                f'{d[5:].replace("-", "/")}</span>' for d in sorted(set(pd_) | set(od_)))
-            strip = (f'<div class="pstrip">{chips}</div>'
-                     '<div class="legend">Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.</div>')
-        if pay.get("status") == "paid":
-            head = f'<b>Paid through {e(pay["through"])}</b><small>Thank you!</small>'
-        elif pay.get("status") == "via":
-            head = f'<b>Payments go through {e(pay["via"])}</b>'
-        else:
-            head = f'<b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small>'
-        cls = "pay due" if pay.get("status") == "due" else "pay"
-        out += f'<div class="{cls}"><i>{"!" if cls.endswith("due") else "&#10003;"}</i><div>{head}{strip}</div></div>'
+    if st.get("payment"):
+        out += pay_html(st["payment"])
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
