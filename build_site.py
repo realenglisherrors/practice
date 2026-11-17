@@ -290,9 +290,13 @@ for st in students:
                 out += '<p class="desc">Homework appears here when it is ready.</p>'
             out += "</section>"
         out += "</div></main>" + TAIL
-        os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
-        open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
+        # the pair's own name AND each member's first name open this same page
+        for sl in {st["slug"]} | {m["slug"] for m in names}:
+            os.makedirs(f"{ROOT}/s/{sl}", exist_ok=True)
+            open(f"{ROOT}/s/{sl}/index.html", "w").write(out)
         continue
+    if st["id"] in {m for x in students for m in x.get("members", [])}:
+        continue  # members of a shared page have no individual page
     mine = [c for c in cards if c["student"] == st["id"]]
     weekly = sorted(((week_key(c), c) for c in mine if week_key(c)), key=lambda x: x[0], reverse=True)
     fix = st.get("fixfile", "")
