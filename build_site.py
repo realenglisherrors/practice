@@ -261,7 +261,7 @@ for _st in students:
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
 
 NEXT_JS = """<script>(function(){var e=document.querySelector(".nextc");if(!e)return;var d=new Date(e.getAttribute("data-t"));if(isNaN(d)||d<new Date())return;
-var o={weekday:"short",month:"short",day:"numeric"},t={hour:"numeric",minute:"2-digit"};
+var z=e.getAttribute("data-z"),o={weekday:"short",month:"short",day:"numeric"},t={hour:"numeric",minute:"2-digit"};if(z){o.timeZone=z;t.timeZone=z;}
 e.querySelector("b").textContent=d.toLocaleDateString("en-US",o)+" \u00b7 "+d.toLocaleTimeString("en-US",t);e.style.display="block";})()</script>"""
 
 
@@ -269,7 +269,8 @@ def next_chip(st):
     nc = st.get("next_class")
     if not nc:
         return ""
-    return f'<div class="nextc" data-t="{html.escape(nc)}"><i>Next class</i><b></b></div>'
+    z = f' data-z="{html.escape(st["tz"])}"' if st.get("tz") else ""
+    return f'<div class="nextc" data-t="{html.escape(nc)}"{z}><i>Next class</i><b></b></div>'
 
 
 def pay_bar(pay):
