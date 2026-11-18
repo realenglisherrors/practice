@@ -27,6 +27,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .band h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.2rem,6.5vw,3.3rem);font-weight:600;line-height:1.05;letter-spacing:.005em}
 .band h1.hi:after{content:"";display:block;width:54px;height:3px;border-radius:3px;background:var(--gold);margin:12px 0 0}
 @media(max-width:600px){.band h1.hi:after{margin-left:auto;margin-right:auto}}
+.nextc{position:absolute;top:-16px;right:0;display:none;text-align:right;font-size:.72rem;letter-spacing:.06em;color:rgba(255,255,255,.78);line-height:1.35}
+.nextc b{display:block;font-size:.95rem;letter-spacing:0;color:#fff;font-weight:600}
+.nextc i{font-style:normal;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;display:block}
+@media(max-width:600px){.nextc{position:static;text-align:center}}
 .pay{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin:0 0 18px;box-shadow:var(--shadow);font-size:.95rem}
 .pay i{font-style:normal;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
 .pay.due i{background:var(--gold-soft);color:#9a7a1c}
@@ -256,6 +260,18 @@ for _st in students:
         _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
 
+NEXT_JS = """<script>(function(){var e=document.querySelector(".nextc");if(!e)return;var d=new Date(e.getAttribute("data-t"));if(isNaN(d)||d<new Date())return;
+var o={weekday:"short",month:"short",day:"numeric"},t={hour:"numeric",minute:"2-digit"};
+e.querySelector("b").textContent=d.toLocaleDateString("en-US",o)+" \u00b7 "+d.toLocaleTimeString("en-US",t);e.style.display="block";})()</script>"""
+
+
+def next_chip(st):
+    nc = st.get("next_class")
+    if not nc:
+        return ""
+    return f'<div class="nextc" data-t="{html.escape(nc)}"><i>Next class</i><b></b></div>'
+
+
 def pay_bar(pay):
     """Same content as pay_html, but as a slim bar pinned to the bottom (tap to expand)."""
     e = html.escape
@@ -315,7 +331,7 @@ for st in students:
         out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
                 f'<div><p class="eyebrow">Your shared page</p><h1 class="hi">Hi, {html.escape(st["name"])}</h1>'
                 '<p class="lede">One page for your shared class: payments for everyone, and a homework column each.</p>'
-                f'{btn}</div></div></header><main class="main">')
+                f'{btn}</div>{next_chip(st)}</div></header><main class="main">')
         out += '<div class="duo">'
         for m in names:
             wk = sorted(((week_key(c), c) for c in cards if c["student"] == m["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
@@ -346,7 +362,7 @@ for st in students:
             out += f'<div class="btns" style="margin-top:22px"><a class="btn gold" href="../../{html.escape(st["fixfile"])}">Open our shared Fix File</a></div>'
         else:
             out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
-        out += "</main>" + TAIL.replace("</body>", (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
+        out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
             os.makedirs(f"{ROOT}/s/{sl}", exist_ok=True)
@@ -374,7 +390,7 @@ for st in students:
     out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
             f'<p class="lede">{lede}</p>'
-            f'{btns}</div></div></header><main class="main">')
+            f'{btns}</div>{next_chip(st)}</div></header><main class="main">')
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
@@ -420,7 +436,7 @@ for st in students:
         out += "</div>"
     if not on_cycle:
         out += PROMO
-    out += "</main>" + TAIL.replace("</body>", (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
+    out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
 
