@@ -263,6 +263,8 @@ def pay_bar(pay):
         head, sub = f'Paid through {e(pay["through"])}', "Thank you!"
     elif pay.get("status") == "via":
         head, sub = f'Payments go through {e(pay["via"])}', ""
+    elif pay.get("status") == "info":
+        head, sub = e(pay["head"]), ""
     else:
         head, sub = "Payment due", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
     strip = ""
@@ -296,6 +298,8 @@ def pay_html(pay):
         head = f'<b>Paid through {e(pay["through"])}</b><small>Thank you!</small>'
     elif pay.get("status") == "via":
         head = f'<b>Payments go through {e(pay["via"])}</b>'
+    elif pay.get("status") == "info":
+        head = f'<b>{e(pay["head"])}</b>'
     else:
         head = f'<b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small>'
     cls = "pay due" if pay.get("status") == "due" else "pay"
