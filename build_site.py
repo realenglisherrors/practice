@@ -266,7 +266,7 @@ def pay_bar(pay):
     elif pay.get("status") == "info":
         head, sub = e(pay["head"]), ""
     else:
-        head, sub = "Payment due", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
+        head, sub = "Not paid yet", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
     strip = ""
     pd_, od_ = pay.get("paid_dates", []), pay.get("owed_dates", [])
     if pd_ or od_:
@@ -301,7 +301,7 @@ def pay_html(pay):
     elif pay.get("status") == "info":
         head = f'<b>{e(pay["head"])}</b>'
     else:
-        head = f'<b>Payment due</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small>'
+        head = f'<b>Not paid yet</b><small>{e(pay.get("detail", ""))}. Message Bianca if you have any questions.</small>'
     cls = "pay due" if pay.get("status") == "due" else "pay"
     return f'<div class="{cls}"><i>{"!" if cls.endswith("due") else "&#10003;"}</i><div>{head}{strip}</div></div>'
 
