@@ -19,6 +19,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .band h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(2.2rem,6.5vw,3.3rem);font-weight:600;line-height:1.05;letter-spacing:.005em}
 .band h1.hi:after{content:"";display:block;width:54px;height:3px;border-radius:3px;background:var(--gold);margin:12px 0 0}
 @media(max-width:600px){.band h1.hi:after{margin-left:auto;margin-right:auto}}
+.nextc{position:absolute;top:-16px;right:0;display:none;text-align:right;font-size:.72rem;letter-spacing:.06em;color:rgba(255,255,255,.78);line-height:1.35}
+.nextc b{display:block;font-size:.95rem;letter-spacing:0;color:#fff;font-weight:600}
+.nextc i{font-style:normal;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;display:block}
+@media(max-width:600px){.nextc{top:-22px;font-size:.66rem}.nextc b{font-size:.85rem}}
 .pay{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin:0 0 18px;box-shadow:var(--shadow);font-size:.95rem}
 .pay i{font-style:normal;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
 .pay.due i{background:var(--gold-soft);color:#9a7a1c}
