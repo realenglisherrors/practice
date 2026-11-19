@@ -360,6 +360,13 @@ for st in students:
                 out += '<p class="desc">Homework appears here when it is ready.</p>'
             out += "</section>"
         out += "</div>"
+        ielts = [c for c in cards if c["student"] == st["id"] and not week_key(c)]
+        if ielts:
+            out += (f'<details class="arch"><summary><h2>IELTS Materials</h2>'
+                    f'<small>{len(ielts)} item{"s" if len(ielts) != 1 else ""}</small>'
+                    f'<span class="chev" aria-hidden="true"></span></summary><div class="rows">')
+            out += "".join(row_html(c, None, "../../") for c in ielts)
+            out += "</div></details>"
         if st["fixfile"]:
             out += f'<div class="btns" style="margin-top:22px"><a class="btn gold" href="../../{html.escape(st["fixfile"])}">Open our shared Fix File</a></div>'
         else:
