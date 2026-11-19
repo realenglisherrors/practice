@@ -14,7 +14,7 @@ students = json.load(open(f"{ROOT}/private/students.json"))
 cards = json.load(open(f"{ROOT}/private/cards.json"))
 
 CSS = """
-:root{--bg:#fff;--card:#F5F6FA;--navy:#1F2A4D;--navy2:#3C518A;--gold:#D9AE4A;--gold-soft:#FBF1D6;--dim:#5A6378;--border:#DCE1EB;
+:root{--bg:#fff;--card:#F5F6FA;--navy:#1F2A4D;--navy2:#3C518A;--gold:#D9AE4A;--gold-soft:#E6EAF4;--dim:#5A6378;--border:#DCE1EB;
 --shadow:0 1px 2px rgba(31,42,77,.05),0 8px 24px rgba(31,42,77,.08);}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -34,7 +34,7 @@ body{font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;back
 @media(max-width:600px){.nextc{top:-22px;font-size:.66rem}.nextc b{font-size:.85rem}}
 .pay{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin:0 0 18px;box-shadow:var(--shadow);font-size:.95rem}
 .pay i{font-style:normal;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
-.pay.due i{background:var(--gold-soft);color:#9a7a1c}
+.pay.due i{background:var(--gold-soft);color:#3C518A}
 .pay small{color:var(--dim);display:block;font-size:.8rem}
 .pstrip{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .pstrip span{min-width:46px;height:26px;padding:0 8px;border-radius:13px;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--dim);box-sizing:border-box}
@@ -45,7 +45,7 @@ body{font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;back
 .paybar summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:.84rem}
 .paybar summary::-webkit-details-marker{display:none}
 .paybar summary i{font-style:normal;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
-.paybar.due summary i{background:var(--gold-soft);color:#9a7a1c}
+.paybar.due summary i{background:var(--gold-soft);color:#3C518A}
 .paybar summary small{color:var(--dim);margin-left:auto;font-size:.74rem}
 .paybar .more{padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
 body:has(.paybar){padding-bottom:56px}
@@ -69,7 +69,7 @@ background:#fff;color:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,.18);transiti
 .sec small{font-size:.74rem;color:var(--dim);letter-spacing:.04em}
 a.hero-card{display:block;text-decoration:none;color:inherit;background:var(--card);border-radius:16px;padding:22px 24px 20px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:5px solid var(--gold);transition:box-shadow .15s,transform .15s}
 a.hero-card:hover,a.hero-card:focus{outline:none;transform:translateY(-2px);box-shadow:0 2px 6px rgba(31,42,77,.08),0 14px 34px rgba(31,42,77,.14)}
-.now{display:inline-block;font-size:.64rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#7a5f14;background:var(--gold-soft);border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.now{display:inline-block;font-size:.64rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3C518A;background:var(--gold-soft);border-radius:999px;padding:3px 10px;margin-bottom:10px}
 .hero-card .title{font-variant-numeric:lining-nums;font-family:'Montserrat',system-ui,sans-serif;font-weight:800;letter-spacing:-.02em;font-size:1.9rem;font-weight:600;line-height:1.1}
 .subtitle{font-size:.82rem;color:var(--dim);font-style:italic;margin-top:2px}
 .desc{font-size:.86rem;color:#4b5b70;line-height:1.6;margin-top:12px}
@@ -101,7 +101,7 @@ details.arch summary:focus-visible{outline:2px solid var(--gold);outline-offset:
 a.row{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 16px;transition:border-color .15s,transform .15s}
 a.row:hover,a.row:focus{border-color:var(--gold);outline:none;transform:translateX(2px)}
 .badge{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.8rem;flex-shrink:0}
-.badge.alt{background:var(--gold-soft);color:#7a5f14}
+.badge.alt{background:var(--gold-soft);color:#3C518A}
 .row .wk{font-weight:600;font-size:.92rem}
 .row .sub{font-size:.74rem;color:var(--dim);flex:1}
 .row .go{color:var(--gold);font-weight:700;font-size:1.1rem}
@@ -119,7 +119,7 @@ a.row:hover,a.row:focus{border-color:var(--gold);outline:none;transform:translat
 .feat{background:transparent;border:1px solid var(--border);border-radius:14px;padding:16px 18px}
 .feat b{display:block;font-size:.9rem;margin-bottom:3px}
 .feat span{font-size:.8rem;color:var(--dim)}
-.feat .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--gold-soft);color:#7a5f14;font-weight:700;font-size:.78rem;align-items:center;justify-content:center;margin-bottom:8px}
+.feat .n{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--gold-soft);color:#3C518A;font-weight:700;font-size:.78rem;align-items:center;justify-content:center;margin-bottom:8px}
 .tl{position:relative;list-style:none;margin:6px 0 0 6px;padding:0}
 .tl:before{content:"";position:absolute;left:15px;top:14px;bottom:14px;width:2px;background:linear-gradient(var(--gold),var(--border))}
 .tl li{position:relative;display:flex;align-items:center;gap:14px;padding:7px 0}
@@ -133,7 +133,7 @@ a.tl-btn:hover,a.tl-btn:focus{transform:translateX(2px);outline:none;background:
 a.tl-btn.cur{background:var(--gold);color:var(--navy)}
 .tl .soon{font-size:.7rem;color:#aab3c0;margin-left:2px}
 .tl .note{padding-top:0}.tl .note .dot{visibility:hidden;height:0}.tl .note .soon{margin-left:0;max-width:30em;line-height:1.4}
-.tl .fixnode .dot{border-color:var(--gold);color:#9a7a1c;background:var(--gold-soft)}
+.tl .fixnode .dot{border-color:var(--gold);color:#3C518A;background:var(--gold-soft)}
 .tl .fixnode .lbl{color:#8a6d1c;font-weight:600}
 footer{text-align:center;padding:8px 20px 40px;font-size:.72rem;color:#9aa4b2;letter-spacing:.12em;text-transform:uppercase}
 
@@ -146,6 +146,18 @@ a.row{border:0;background:var(--card);border-radius:16px}
 .shadow-none,.pay,a.hero-card,.enter-card{box-shadow:none}
 .enter input{background:#fff;border-color:var(--border)}
 .dot{background:#fff}
+
+em,i,.subtitle,.band h1 em,.promo .pl em{font-style:normal!important}
+.band h1 em{color:var(--gold)}
+.band{padding:22px 20px 56px!important}
+.band img{width:96px!important;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.band-in{gap:22px!important}
+.band h1{font-size:clamp(1.6rem,5vw,2.2rem)!important}
+.lede{font-size:.9rem;margin-top:8px}
+.btns{margin-top:14px}
+.main{margin-top:-24px}
+@media(max-width:600px){.band{padding:20px 20px 52px!important}.band img{width:80px!important}.band-in{gap:12px!important}}
+.band img{border-radius:0!important;box-shadow:none!important}
 """
 
 HEAD = """<!DOCTYPE html>

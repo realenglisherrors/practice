@@ -11,9 +11,10 @@ h1,h2,h3,.term,.grp-term,.pc-h,.edit .now,.hw-title{font-family:"Montserrat","He
 .pc-h{font-size:23px!important;line-height:1.2!important}
 .card{border:0!important;border-radius:24px!important;box-shadow:none!important}
 .pp-row{grid-template-columns:4.6em 1fr 5.8em!important}.pp-n{white-space:nowrap}
+.hw-logo{border-radius:0!important;box-shadow:none!important}
 .btn{border-radius:999px!important;font-weight:700}
-@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#FFFFFF;--card:#F5F6FA;--line:#E3E7F0;--accent:#3C518A;--accent-soft:#E6EAF4}}
-:root[data-theme="light"]{--paper:#FFFFFF;--card:#F5F6FA;--line:#E3E7F0;--accent:#3C518A;--accent-soft:#E6EAF4}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#FFFFFF;--card:#F5F6FA;--line:#E3E7F0;--accent:#3C518A;--accent-soft:#E6EAF4;--mark:#DDE5F8;--pc-goldbg:#EAEEF6;--pc-goldtrack:#D3DAEA}}
+:root[data-theme="light"]{--paper:#FFFFFF;--card:#F5F6FA;--line:#E3E7F0;--accent:#3C518A;--accent-soft:#E6EAF4;--mark:#DDE5F8;--pc-goldbg:#EAEEF6;--pc-goldtrack:#D3DAEA}
 </style>
 """ + END
 n = 0
