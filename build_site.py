@@ -170,6 +170,14 @@ HEAD = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>{css}</style></head><body>
 """
+BOARD = "https://claude.ai/artifact/KJ2m9LFG7jYR9JjtiRGn7i"
+def present_js(st):
+    if not st.get("board"): return ""
+    return ('<script>(function(){try{if(!/[?&]present\\b/.test(location.search))return;'
+            'var h=document.querySelector(".btns");if(!h){h=document.createElement("div");h.className="btns";'
+            'var b=document.querySelector(".band-in>div")||document.querySelector(".band");b.appendChild(h)}'
+            'var a=document.createElement("a");a.className="btn gold";a.target="_blank";a.rel="noopener";'
+            'a.href="' + BOARD + '#present=' + st["board"] + '";a.innerHTML="<i></i>Present notebook";h.appendChild(a)}catch(e){}})()</script>')
 TAIL = '<footer>Real students. Real errors. Real fixes.</footer></body></html>\n'
 
 
@@ -395,7 +403,7 @@ for st in students:
             out += f'<div class="btns" style="margin-top:22px"><a class="btn gold" href="../../{html.escape(st["fixfile"])}">Open our shared Fix File</a></div>'
         else:
             out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
-        out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
+        out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
             os.makedirs(f"{ROOT}/s/{sl}", exist_ok=True)
@@ -469,7 +477,7 @@ for st in students:
         out += "</div>"
     if not on_cycle:
         out += PROMO
-    out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + "</body>")
+    out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
 
