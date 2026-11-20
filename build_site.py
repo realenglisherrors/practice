@@ -170,14 +170,41 @@ HEAD = """<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>{css}</style></head><body>
 """
-BOARD = "https://claude.ai/artifact/KJ2m9LFG7jYR9JjtiRGn7i"
+DEMO_NB = """<style>
+.nbov{position:fixed;inset:0;z-index:100;background:#fffdf8;display:none;flex-direction:column;font-family:'Montserrat',system-ui,sans-serif}
+.nbov.on{display:flex}
+.nbov .nbh{background:#3C518A;color:#fff;padding:16px clamp(16px,4vw,40px);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.nbov .nbh p{margin:0;font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#D9AE4A}
+.nbov .nbh h2{margin:2px 0 0;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em}
+.nbov .nbh button{border:1.5px solid rgba(255,255,255,.55);background:transparent;color:#fff;border-radius:999px;padding:8px 18px;font:700 .85rem 'Montserrat',sans-serif;cursor:pointer}
+.nbov .nbk{display:flex;flex-wrap:wrap;gap:6px 18px;padding:10px clamp(16px,4vw,40px);border-bottom:1px solid #E3E7F0;font-size:.82rem;color:#5A6378}
+.nbov .pp{flex:1;overflow:auto;padding:clamp(18px,3vw,32px) clamp(20px,7vw,96px);font-size:clamp(1.05rem,1.9vw,1.35rem);line-height:1.75;color:#1a1a1a}
+.nbov h3{margin:1.2em 0 .3em;font-size:1.1em;font-weight:800;color:#1155CC}.nbov h3:first-child{margin-top:0}
+.nbov .bad{color:#9aa0ab;font-weight:800}.nbov .ok{color:#1A7A4B;font-weight:800}.nbov .gap{color:#1155CC;font-weight:700}.nbov .pron{color:#A44879;font-weight:700}
+.nbov ul{margin:.2em 0;padding-left:1.3em}
+</style>
+<div class="nbov" id="nbov" role="dialog" aria-label="Sample's notebook"><div class="nbh"><div><p>Real English Errors</p><h2>Sample's notebook</h2></div><button type="button" id="nbx">Close</button></div>
+<div class="nbk"><span><b class="bad">grey</b> what you said</span><span><b class="ok">green</b> the fix</span><span><b class="gap">blue</b> a gap</span><span><b class="pron">purple</b> pronunciation</span></div>
+<div class="pp">
+<h3>Class 1 · Nov 20</h3><ul>
+<li>Last weekend, <span class="bad">we go</span> &rarr; <span class="ok">we went</span> to the lake.</li>
+<li>I <span class="bad">don't wear</span> a coat yesterday &rarr; I <span class="ok">didn't wear</span> a coat yesterday.</li>
+<li>My brother <span class="bad">want get</span> a dog &rarr; my brother <span class="ok">wants to get</span> a dog.</li>
+<li>My grandparents live <span class="gap">in the lower part of</span> Poland.</li>
+<li>People there speak a different <span class="gap">dialect</span>.</li>
+<li><span class="pron">comfortable</span> &nbsp; [KUMF-ter-bul]</li></ul>
+<h3>Class 2 · Nov 27</h3><ul>
+<li>If <span class="bad">will be</span> good weather &rarr; <span class="ok">if the weather is good</span>, we will go to the beach.</li>
+<li>I'm <span class="bad">tired about</span> the noise &rarr; I'm <span class="ok">tired of</span> the noise.</li>
+<li>She cooks and talks <span class="gap">at the same time</span>.</li>
+<li><span class="pron">vegetable</span> &nbsp; [VEJ-tuh-bul]</li></ul>
+</div></div>
+<script>(function(){var h=document.querySelector(".btns");if(!h){h=document.createElement("div");h.className="btns";(document.querySelector(".band-in>div")||document.querySelector(".band")).appendChild(h)}
+var a=document.createElement("button");a.type="button";a.className="btn gold";a.innerHTML="<i></i>Present notebook";h.appendChild(a);
+var o=document.getElementById("nbov");a.onclick=function(){o.classList.add("on")};document.getElementById("nbx").onclick=function(){o.classList.remove("on")};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")o.classList.remove("on")})})()</script>"""
 def present_js(st):
-    if not st.get("board"): return ""
-    return ('<script>(function(){try{if(!/[?&]present\\b/.test(location.search))return;'
-            'var h=document.querySelector(".btns");if(!h){h=document.createElement("div");h.className="btns";'
-            'var b=document.querySelector(".band-in>div")||document.querySelector(".band");b.appendChild(h)}'
-            'var a=document.createElement("a");a.className="btn gold";a.target="_blank";a.rel="noopener";'
-            'a.href="' + BOARD + '#present=' + st["board"] + '";a.innerHTML="<i></i>Present notebook";h.appendChild(a)}catch(e){}})()</script>')
+    return DEMO_NB if st["id"] == "sm" else ""
 TAIL = '<footer>Real students. Real errors. Real fixes.</footer></body></html>\n'
 
 
