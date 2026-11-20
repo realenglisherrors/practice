@@ -17,12 +17,30 @@ h1,h2,h3,.term,.grp-term,.pc-h,.edit .now,.hw-title{font-family:"Montserrat","He
 :root[data-theme="light"]{--paper:#FFFFFF;--card:#F5F6FA;--line:#E3E7F0;--accent:#3C518A;--accent-soft:#E6EAF4;--mark:#DDE5F8;--pc-goldbg:#EAEEF6;--pc-goldtrack:#D3DAEA}
 </style>
 """ + END
+FIX = START.replace("-->","-fix-->")  # unused marker kept simple
+FIXCSS = """<style>
+:root{--display:"Montserrat","Helvetica Neue",Arial,sans-serif;--body:"Montserrat","Helvetica Neue",Arial,sans-serif}
+.logo,.hero .logo{border-radius:0!important;box-shadow:none!important}
+.hero .logo{max-width:300px!important}
+.hint{font-style:normal!important}
+.rev,.tier,.pushsum,.send,.gift,.msg{border:0!important;border-radius:20px!important;background:var(--tint)!important}
+.card{background:var(--surface)!important}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--gold-soft:#E6EAF4}}
+:root[data-theme="light"]{--gold-soft:#E6EAF4}
+</style>
+"""
+SKIP = ("rc",)  # Roberto's files: never touched
 n = 0
 for f in sorted(glob.glob("src/exercises/*.html")+glob.glob("private/meet/*.html")):
     s = open(f, encoding="utf-8").read()
-    if "</head>" not in s: continue
+    if "</head>" not in s or f.split("/")[-1].startswith(SKIP): continue
     s2 = re.sub(re.escape(START) + r".*?" + re.escape(END) + r"\n?", "", s, flags=re.S)
-    s2 = s2.replace("</head>", BLOCK + "\n</head>", 1)
+    if "--display:" in s2:  # Fix File: styles live in <body>, so go last
+        blk = BLOCK[:-len(END)] + FIXCSS + END
+        k = s2.rfind("</body>")
+        s2 = (s2[:k] + blk + "\n" + s2[k:]) if k != -1 else s2 + blk
+    else:
+        s2 = s2.replace("</head>", BLOCK + "\n</head>", 1)
     if s2 != s:
         open(f, "w", encoding="utf-8").write(s2); n += 1
 print(f"restyled {n} pages")
