@@ -158,6 +158,8 @@ em,i,.subtitle,.band h1 em,.promo .pl em{font-style:normal!important}
 .main{margin-top:-24px}
 @media(max-width:600px){.band{padding:20px 20px 52px!important}.band img{width:80px!important}.band-in{gap:12px!important}}
 .band img{border-radius:0!important;box-shadow:none!important}
+.nextc{top:10px!important;right:20px!important}
+@media(max-width:600px){.nextc{top:8px!important;right:14px!important}}
 """
 
 HEAD = """<!DOCTYPE html>
