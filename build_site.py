@@ -302,6 +302,7 @@ def slug_for(name):
 _stale = any(_st.get("slug") != slug_for(_st["name"]) for _st in students)
 for _st in students:
     _st["slug"] = slug_for(_st["name"])
+ACTIVE = [x for x in students if not x.get("offboarded")]  # offboard.py sets "offboarded": date; their pages are gone
 if _stale:  # keep the stored slugs honest, so a page's folder can be found from students.json
     json.dump(students, open(f"{ROOT}/private/students.json", "w"), indent=2, ensure_ascii=False)
     open(f"{ROOT}/private/students.json", "a").write("\n")
@@ -318,7 +319,7 @@ for _f in os.listdir(f"{ROOT}/private/meet"):
     os.remove(f"{ROOT}/private/meet/{_f}")
 _lines = []
 _members = {m for x in students for m in x.get("members", [])}
-for _st in students:
+for _st in ACTIVE:
     if _st["meet"] and _st["id"] not in _members:
         open(f"{ROOT}/private/meet/meet-{_st['id']}.html", "w").write(MEET_PAGE.replace("__URL__", html.escape(_st["meet"], quote=True)))
         _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
@@ -387,8 +388,42 @@ def pay_html(pay):
     return f'<div class="{cls}"><i>{"!" if cls.endswith("due") else "&#10003;"}</i><div>{head}{strip}</div></div>'
 
 
+import zipfile
+
+
+def keep_pack(st, members=None):
+    """One zip with the student's Fix File and every homework as a blank copy (the locked pages: no unlocked copy ever goes into the public repo)."""
+    if not st.get("handover"):  # only from hand-over until offboarding (keeps the public repo small)
+        return ""
+    ids = [m["id"] for m in members] if members else [st["id"]]
+    files = []
+    for c in cards:
+        if c["student"] in ids and c["href"] != st.get("fixfile") and os.path.exists(f"{ROOT}/{c['href']}".replace("%20", " ")):
+            k = week_key(c)
+            who = next((m["name"] for m in members if m["id"] == c["student"]), "") if members else ""
+            nm = (f"Cycle {k[0]} " if k and k[0] > 1 else "") + (f"Session {k[1]} Homework" if k else c["title"])
+            files.append((f"{ROOT}/{c['href']}".replace("%20", " "), f"Homework/{(who + ' - ') if who else ''}{nm}.html"))
+    if st.get("fixfile") and os.path.exists(f"{ROOT}/{st['fixfile']}"):
+        files.append((f"{ROOT}/{st['fixfile']}", f"{st['name']} - Fix File.html"))
+    if not files:
+        return ""
+    name = f"{re.sub(r'[^A-Za-z0-9]+', '-', unicodedata.normalize('NFD', st['name']).encode('ascii', 'ignore').decode()).strip('-')}-Real-English-Errors.zip"
+    readme = (f"Real English Errors: {st['name']}'s work\n\nOpen any file in your browser. Type your first name to unlock it.\n"
+              "Every homework starts blank, so you can do it again as often as you like.\n")
+    with zipfile.ZipFile(f"{ROOT}/s/{st['slug']}/{name}", "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr(zipfile.ZipInfo("Read me.txt", (2026, 1, 1, 0, 0, 0)), readme)
+        for src, arc in sorted(set(files), key=lambda x: x[1]):
+            zi = zipfile.ZipInfo(arc, (2026, 1, 1, 0, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(zi, open(src, "rb").read())
+    n_hw = sum(1 for _, a in files if a.startswith("Homework/"))
+    what = ("your Fix File and " if st.get("fixfile") else "") + (f"all {n_hw} homework pages" if n_hw != 1 else "your homework page")
+    return (f'<div class="sec"><h2>Keep your work</h2></div><p class="desc" style="margin-top:0">Download {what} to your computer. '
+            'Each homework opens blank, so you can do it again whenever you like.</p>'
+            f'<div class="btns" style="margin-top:14px"><a class="btn" href="{html.escape(name)}" download><i></i>Download my work</a></div>')
+
+
 shutil.rmtree(f"{ROOT}/s", ignore_errors=True)
-for st in students:
+for st in ACTIVE:
     if st.get("members"):
         names = [next(x for x in students if x["id"] == m) for m in st["members"]]
         out = HEAD.format(robots='<meta name="robots" content="noindex">\n', title=f"{html.escape(st['name'])} · Real English Errors", css=CSS)
@@ -434,6 +469,8 @@ for st in students:
             out += f'<div class="btns" style="margin-top:22px"><a class="btn gold" href="../../{html.escape(st["fixfile"])}">Open our shared Fix File</a></div>'
         else:
             out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
+        os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
+        out += keep_pack(st, names)
         out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
@@ -508,6 +545,8 @@ for st in students:
         out += "</div>"
     if not on_cycle:
         out += PROMO
+    os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
+    out += keep_pack(st)
     out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
@@ -536,7 +575,7 @@ catch(x){msg.textContent="Something went wrong. Please try again.";}});
 # every student's page and current homework, for the Students board (read by sync_board.py; private, never committed)
 SITE = "https://realenglisherrors.github.io/practice/"
 _links = {}
-for st in students:
+for st in ACTIVE:
     host = next((x for x in students if st["id"] in x.get("members", [])), st)  # pair members share the pair's page
     wk = sorted(((week_key(c), c) for c in cards if c["student"] == st["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
     _links[st["id"]] = {"page": f"{SITE}s/{host['slug']}/",
