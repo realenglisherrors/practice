@@ -834,7 +834,17 @@ exports.init = init;
             const staticrypt = staticryptInitiator.init(staticryptConfig, templateConfig);
 
             // try to automatically decrypt on load if there is a saved password
+            // same tab, same page: a reload (e.g. the Short / Long switch) reopens it without asking again.
+            // sessionStorage only lives as long as this tab, so closing the tab forgets it.
+            const tabKey = "ree-unlock:" + location.pathname;
             window.onload = async function () {
+                let saved = null;
+                try { saved = sessionStorage.getItem(tabKey); } catch (e) {}
+                if (saved) {
+                    const r = await staticrypt.handleDecryptionOfPage(saved, false);
+                    if (r && r.isSuccessful) return;
+                    try { sessionStorage.removeItem(tabKey); } catch (e) {}
+                }
                 const { isSuccessful } = await staticrypt.handleDecryptOnLoad();
 
                 // if we didn't decrypt anything on load, show the password prompt. Otherwise the content has already been
@@ -881,9 +891,11 @@ exports.init = init;
                 const password = document.getElementById("staticrypt-password").value,
                     isRememberChecked = document.getElementById("staticrypt-remember").checked;
 
+                try { sessionStorage.setItem(tabKey, password); } catch (e) {}
                 const { isSuccessful } = await staticrypt.handleDecryptionOfPage(password, isRememberChecked);
 
                 if (!isSuccessful) {
+                    try { sessionStorage.removeItem(tabKey); } catch (e) {}
                     alert(templateError);
                 }
             });
