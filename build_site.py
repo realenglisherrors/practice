@@ -240,7 +240,9 @@ def highlights(desc):
         names = " and ".join(l.lower() for l, _ in items)
         lis = f"<li><b>Review</b> this week&rsquo;s {names}</li>"
     else:
-        lis = "".join(f'<li><b>{html.escape(l)}</b>{(" " + html.escape(x)) if x else ""}</li>' for l, x in items)
+        # a label with no words (e.g. just "pronunciation") gets a generic line, never a blank bullet
+        items = [(l, x or "the sounds and words from this week\u2019s class") for l, x in items]
+        lis = "".join(f'<li><b>{html.escape(l)}</b> {html.escape(x)}</li>' for l, x in items)
     if practice:
         lis += f'<li><b>Practise</b> {html.escape(practice)}</li>'
     lis += '<li><b>Finish</b> by sending your results to Bianca by email and WhatsApp</li>'
@@ -469,7 +471,7 @@ for st in ACTIVE:
         names = [next(x for x in students if x["id"] == m) for m in st["members"]]
         out = HEAD.format(robots='<meta name="robots" content="noindex">\n', title=f"{html.escape(st['name'])} · Real English Errors", css=CSS)
         btn = (f'<div class="btns"><a class="btn" href="../../exercises/meet-{st["id"]}.html"><i></i>Join our class on Google Meet</a></div>' if st["meet"] else "")
-        out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
+        out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical-transparent.png" alt="Real English Errors">'
                 f'<div><p class="eyebrow">Your shared page</p><h1 class="hi">Hi, {html.escape(st["name"])}</h1>'
                 '<p class="lede">One page for your shared class: payments for everyone, and a homework column each.</p>'
                 f'{btn}</div>{next_chip(st)}</div></header><main class="main">')
@@ -538,7 +540,7 @@ for st in ACTIVE:
     lede = (("This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place."
              if st["meet"] else "This week&rsquo;s homework and every week before it: everything you need between lessons, in one place.")
             if on_cycle else "Your practice exercises, all in one place.")
-    out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical.png" alt="Real English Errors">'
+    out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical-transparent.png" alt="Real English Errors">'
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
             f'<p class="lede">{lede}</p>'
             f'{btns}</div>{next_chip(st)}</div></header><main class="main">')
@@ -594,7 +596,7 @@ for st in ACTIVE:
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
 
-LANDING = """<header class="band"><div class="band-in"><img src="logo-vertical.png" alt="Real English Errors: Real students. Real errors. Real fixes.">
+LANDING = """<header class="band"><div class="band-in"><img src="logo-vertical-transparent.png" alt="Real English Errors: Real students. Real errors. Real fixes.">
 <div><p class="eyebrow">Student page</p><h1>Your homework, <em>all in one place</em></h1>
 <p class="lede">Open your personal page to find this week&rsquo;s exercises, and every week before it.</p></div></div></header>
 <main class="main"><div class="enter-card"><form id="f" autocomplete="off"><label for="n">What&rsquo;s your name?</label>

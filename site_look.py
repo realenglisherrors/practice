@@ -84,6 +84,36 @@ def _get_logo():
     return LOGO
 
 
+# Older homework pages opened with a bare logo picture (the "sticker"), a date and a heading. Give them the same blue header band
+# (transparent logo, eyebrow, heading, date) as the newer pages. No "Due" pill: these are past weeks. Safe to run twice.
+HERO_START, HERO_END = "/*hw-hero-legacy*/", "/*end hw-hero-legacy*/"
+HERO_CSS = HERO_START + """
+.hw-hero{position:relative;overflow:hidden;background:#3C518A;color:#fff;border-radius:16px;margin:0 0 18px;display:grid;grid-template-columns:minmax(0,118px) minmax(0,1fr);gap:16px;align-items:center;padding:16px}
+.hw-hero::before{content:"";position:absolute;right:-180px;top:-200px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(217,174,74,.28),rgba(217,174,74,0) 65%);pointer-events:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hw-hero{background:#24305A}}
+:root[data-theme="dark"] .hw-hero{background:#24305A}
+.hw-logo{position:relative;display:block;width:100%;height:auto;border-radius:0;box-shadow:none}
+.hw-text{position:relative;min-width:0}
+.hw-eye{margin:0 0 6px;font-family:"Montserrat","Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.15em;color:#D9AE4A}
+.hw-hero h1{position:relative;color:#fff;font-size:26px;line-height:1.12;margin:0 0 10px}
+.hw-hero .date{position:relative;color:#DFE4F4;font-size:14.5px;margin:0}
+@media (max-width:360px){.hw-hero{grid-template-columns:minmax(0,92px) minmax(0,1fr);gap:12px;padding:14px}.hw-hero h1{font-size:23px}}
+""" + HERO_END
+_OLD_HERO = re.compile(r'<img class="brand-logo" src="data:image/png;base64,[A-Za-z0-9+/=]+" alt="([^"]*)">\s*<p class="date">Week \$\{C\.week\}, \$\{C\.date\}</p>\s*<h1>Your homework, \$\{C\.student\}</h1>')
+
+
+def upgrade_header(s):
+    if ".hw-hero{" in s:  # already has the band styles (newer pages carry their own; upgraded pages carry ours)
+        return s
+    if _OLD_HERO.search(s):
+        s = _OLD_HERO.sub(lambda m: ('<header class="hw-hero"><img class="hw-logo" src="' + _get_logo() + '" alt="' + m.group(1) + '">'
+                     '<div class="hw-text"><p class="hw-eye">${C.student.toUpperCase()}\'S HOMEWORK</p>'
+                     '<h1>Your homework, ${C.student}</h1><p class="date">Week ${C.week}, ${C.date}</p></div></header>'), s, count=1)
+    if 'class="hw-hero"' in s:
+        s = s.replace("</head>", "<style>" + HERO_CSS + "</style>\n</head>", 1)
+    return s
+
+
 def site_look(s):
     """Return the page with the realenglisherrors.com look (and, for homework pages, the Short / Long switch). Safe to run twice."""
     s2 = re.sub(re.escape(START) + r".*?" + re.escape(END) + r"\n?", "", s, flags=re.S)
@@ -93,6 +123,7 @@ def site_look(s):
         return (s2[:k] + blk + "\n" + s2[k:]) if k != -1 else s2 + blk
     if "</head>" not in s2:
         return s2
+    s2 = upgrade_header(s2)
     s2 = re.sub(r'(<img[^>]*class="hw-logo"[^>]*src=")(data:image/[^"]+)(")', lambda m: m.group(1) + _get_logo() + m.group(3), s2)
     s2 = s2.replace("</head>", BLOCK + "\n</head>", 1)
     s2 = re.sub(re.escape(LEN_START) + r".*?" + re.escape(LEN_END) + r"\n?", "", s2, flags=re.S)
