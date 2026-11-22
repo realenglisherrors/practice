@@ -1,0 +1,9 @@
+<style>/* Error Bank on the site look: soft cards, Yes / Filmed / No stay visible */
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .card{background:#F5F6FA!important}}
+:root[data-theme="light"] .card{background:#F5F6FA!important}
+.card.g{background:#e6f4ea!important;box-shadow:inset 0 0 0 2px #2f8a4e!important}
+.card.m{background:#f6eedb!important;box-shadow:inset 0 0 0 2px #b98d2c!important}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card.g{background:#1d3a28!important}:root:not([data-theme="light"]) .card.m{background:#3a3120!important}}
+:root[data-theme="dark"] .card.g{background:#1d3a28!important}:root[data-theme="dark"] .card.m{background:#3a3120!important}
+.big .n,.big .t,.verb,section.group h3{font-weight:800}
+</style>
