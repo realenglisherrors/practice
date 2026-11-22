@@ -299,8 +299,12 @@ def slug_for(name):
     return hashlib.sha256((SALT + ":" + norm(name)).encode()).hexdigest()[:16]
 
 
+_stale = any(_st.get("slug") != slug_for(_st["name"]) for _st in students)
 for _st in students:
     _st["slug"] = slug_for(_st["name"])
+if _stale:  # keep the stored slugs honest, so a page's folder can be found from students.json
+    json.dump(students, open(f"{ROOT}/private/students.json", "w"), indent=2, ensure_ascii=False)
+    open(f"{ROOT}/private/students.json", "a").write("\n")
 assert len({s["slug"] for s in students}) == len(students), "two students normalise to the same name"
 
 MEET_PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -529,6 +533,17 @@ try{var u="s/"+await slug(v)+"/";var r=await fetch(u,{cache:"no-store"});
 if(r.ok){location.href=u;}else{msg.textContent="We couldn\u2019t find that name. Check the spelling, or message Bianca.";}}
 catch(x){msg.textContent="Something went wrong. Please try again.";}});
 </script>"""
+# every student's page and current homework, for the Students board (read by sync_board.py; private, never committed)
+SITE = "https://realenglisherrors.github.io/practice/"
+_links = {}
+for st in students:
+    host = next((x for x in students if st["id"] in x.get("members", [])), st)  # pair members share the pair's page
+    wk = sorted(((week_key(c), c) for c in cards if c["student"] == st["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
+    _links[st["id"]] = {"page": f"{SITE}s/{host['slug']}/",
+                        "hw": (SITE + wk[0][1]["href"]) if wk else "",
+                        "hw_title": wk[0][1]["title"] if wk else ""}
+json.dump(_links, open(f"{ROOT}/private/site_links.json", "w"), indent=1, ensure_ascii=False)
+
 idx = HEAD.format(robots='<meta name="robots" content="noindex">\n', title="Real English Errors", css=CSS)
 idx += LANDING.replace("__SALT__", SALT) + TAIL
 open(f"{ROOT}/index.html", "w").write(idx)
