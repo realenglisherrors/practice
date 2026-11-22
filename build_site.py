@@ -422,6 +422,47 @@ def keep_pack(st, members=None):
             f'<div class="btns" style="margin-top:14px"><a class="btn" href="{html.escape(name)}" download><i></i>Download my work</a></div>')
 
 
+WHATSAPP, EMAIL = "16047354550", "biamtakacs@gmail.com"
+TQ = [("start", "When we started, what did you want to change about your English?", ""),
+      ("now", "What feels different now?", "A moment when you noticed it is perfect."),
+      ("fix", "Is there a fix you catch yourself using?", "Your Fix File can jog your memory."),
+      ("friend", "What would you tell someone who's thinking about doing a cycle?", ""),
+      ("better", "Is there anything you'd change about the program?", "This one is just for me, and honest answers help the most.")]
+
+TSTYLE = """<style>.tform .tq{display:block;margin:18px 0 0}.tform .tq b{display:block;font-weight:700;font-size:.95rem}.tform .tq small{display:block;color:var(--dim);font-size:.82rem;margin-top:2px}
+.tform textarea{display:block;width:100%;margin-top:8px;font:inherit;font-size:.95rem;padding:12px 16px;border:0;border-radius:18px;background:var(--card);color:var(--navy);resize:vertical}
+.tform textarea:focus{outline:2px solid var(--gold)}.tps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.tp{display:inline-flex;gap:6px;align-items:center;padding:7px 14px;border-radius:999px;background:var(--card);font-size:.86rem;cursor:pointer}</style>"""
+
+
+def testimonial(st, n_hw):
+    """Hand-over only: a short, open testimonial form. It sends to Bianca the same way the homework does (WhatsApp, email or copy)."""
+    if not st.get("handover"):
+        return ""
+    e, first = html.escape, st["name"].split(" ")[0]
+    facts = " · ".join(x for x in [f"{st.get('homeworks', 10) + 2} sessions", (f"{n_hw} homework pages" if n_hw != 1 else "1 homework page") if n_hw else "", "your Fix File"] if x)
+    qs = "".join(f'<label class="tq"><b>{e(q)}</b>{f"<small>{e(h)}</small>" if h else ""}<textarea data-k="{k}" rows="3"></textarea></label>' for k, q, h in TQ)
+    perm = "".join(f'<label class="tp"><input type="radio" name="perm" value="{e(v)}"{" checked" if i == 0 else ""}> {e(v)}</label>'
+                   for i, v in enumerate([f"{first} and my country", "My initials only", "No name", "Please keep it private"]))
+    return f"""<div class="sec"><h2>Share your experience</h2></div>
+<div class="tform" id="tform"><p class="desc" style="margin-top:0">Looking back on our cycle: {e(facts)}. If you'd like to, tell me in your own words how it went.
+Honest answers help other learners decide, and help me make the program better. Short answers are perfect, and you can skip any question.</p>
+{qs}<p class="tq"><b>If I share your words, how should I sign them?</b></p><div class="tps">{perm}</div>
+<div class="btns"><a class="btn gold" id="twa" href="#"><i></i>Send on WhatsApp</a><a class="btn" id="tem" href="#"><i></i>Send by email</a><a class="btn" id="tcp" href="#"><i></i>Copy</a></div>
+<p class="desc" id="tmsg" role="status"></p></div>
+{TSTYLE}
+<script>(function(){{var K="ree-testimonial-{e(st['slug'])}",f=document.getElementById("tform"),T=f.querySelectorAll("textarea");
+try{{var d=JSON.parse(localStorage.getItem(K)||"{{}}");T.forEach(function(t){{t.value=d[t.dataset.k]||""}})}}catch(x){{}}
+f.addEventListener("input",function(){{var d={{}};T.forEach(function(t){{d[t.dataset.k]=t.value}});try{{localStorage.setItem(K,JSON.stringify(d))}}catch(x){{}}}});
+function msg(){{var out=["Testimonial from {e(st['name'])}",""];T.forEach(function(t){{if(t.value.trim()){{out.push(t.closest(".tq").querySelector("b").textContent+(t.dataset.k==="better"?" (private)":""));out.push(t.value.trim());out.push("")}}}});
+var p=f.querySelector("input[name=perm]:checked");out.push("Sign it: "+(p?p.value:""));return out.join("\\n")}}
+function empty(){{return ![].some.call(T,function(t){{return t.value.trim()}})}}
+function say(t){{document.getElementById("tmsg").textContent=t}}
+document.getElementById("twa").onclick=function(ev){{ev.preventDefault();if(empty())return say("Write a few words first.");window.open("https://wa.me/{WHATSAPP}?text="+encodeURIComponent(msg()),"_blank");say("Thank you so much!")}};
+document.getElementById("tem").onclick=function(ev){{ev.preventDefault();if(empty())return say("Write a few words first.");location.href="mailto:{EMAIL}?subject="+encodeURIComponent("My Real English Errors cycle")+"&body="+encodeURIComponent(msg());say("Thank you so much!")}};
+document.getElementById("tcp").onclick=function(ev){{ev.preventDefault();if(empty())return say("Write a few words first.");navigator.clipboard.writeText(msg()).then(function(){{say("Copied. Paste it to me on WhatsApp or email. Thank you!")}},function(){{say("Copy didn't work here. Try WhatsApp or email.")}})}};
+}})()</script>"""
+
+
 shutil.rmtree(f"{ROOT}/s", ignore_errors=True)
 for st in ACTIVE:
     if st.get("members"):
@@ -471,6 +512,7 @@ for st in ACTIVE:
             out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
         os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
         out += keep_pack(st, names)
+        out += testimonial(st, sum(1 for c in cards if c["student"] in {m["id"] for m in names} and week_key(c)))
         out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
@@ -547,6 +589,7 @@ for st in ACTIVE:
         out += PROMO
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     out += keep_pack(st)
+    out += testimonial(st, len(weekly))
     out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
