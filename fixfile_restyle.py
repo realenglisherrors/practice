@@ -1,10 +1,8 @@
 # Usage: python3 fixfile_restyle.py in.html out.html  (adds the site look to a Fix File or an Error Bank; run after fill.py)
-import sys,re,base64,importlib.util
-spec=importlib.util.spec_from_file_location("r","/Users/bianca/Desktop/HACKING/practice/restyle.py")
-# reuse the block text from restyle.py without running its loop
-src=open("/Users/bianca/Desktop/HACKING/practice/restyle.py").read()
-ns={}
-exec(src.split("LEN_START, LEN_END")[0].replace("import glob, re, sys",""),{"re":re},ns)
+import sys,re,base64,os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import site_look as ns_mod
+ns = {k: getattr(ns_mod, k) for k in ("BLOCK", "FIXCSS", "START", "END")}
 blk=ns["BLOCK"][:-len(ns["END"])]+ns["FIXCSS"]+ns["END"]
 EB=open("/Users/bianca/Desktop/HACKING/practice/errorbank_look.css").read()
 f=sys.argv[1]; s=open(f,encoding="utf-8").read()
