@@ -47,7 +47,14 @@ body{font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;back
 .paybar summary i{font-style:normal;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
 .paybar.due summary i{background:var(--gold-soft);color:#3C518A}
 .paybar summary small{color:var(--dim);margin-left:auto;font-size:.74rem}
-.paybar .more{padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
+.ptiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:2px 0 12px}
+.ptiles>div{background:var(--bg);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.ptiles small{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.ptiles b{font-size:1.25rem;line-height:1.15;color:var(--navy);font-weight:800}
+.ptiles span{font-size:.78rem;color:var(--dim)}
+.ptiles .due{background:var(--gold-soft)}.ptiles .due b{color:#8a6d1c}
+.pnote{margin:8px 0 0}
+.paybar .more{max-height:60vh;overflow:auto;padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
 body:has(.paybar){padding-bottom:56px}
 .pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
 .main:has(.duo){max-width:1040px}
@@ -378,8 +385,26 @@ def next_chip(st):
     return f'<div class="nextc" data-t="{html.escape(nc)}"{z}><i>Next class</i><b></b></div>'
 
 
-def pay_bar(pay):
-    """Same content as pay_html, but as a slim bar pinned to the bottom (tap to expand)."""
+PAY_JS = """<script>(function(){var bar=document.querySelector(".paybar[data-pay]");if(!bar)return;var P;try{P=JSON.parse(bar.getAttribute("data-pay"))}catch(e){return}
+var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],n=new Date(),td=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2);
+function f(d){return M[+d.slice(5,7)-1]+" "+(+d.slice(8))}function c(k){return k+(k==1?" class":" classes")}
+var paid=P.paid||[],owed=P.owed||[],bk=(P.booked||[]).filter(function(d){return d>=td}),has=paid.length||owed.length||(P.last&&1);
+var all=[];paid.concat(owed,bk).forEach(function(d){if(all.indexOf(d)<0)all.push(d)});all.sort();
+var np=all.filter(function(d){return d<td&&paid.indexOf(d)<0}).length,ahead=paid.filter(function(d){return d>=td}).length;
+var t='';if(P.last)t+='<div><small>Last payment</small><b>'+f(P.last.date)+'</b><span>'+c(P.last.classes)+'</span></div>';
+if(has)t+='<div><small>Paid ahead</small><b>'+ahead+'</b><span>'+(ahead==1?"class":"classes")+'</span></div>';
+t+='<div><small>Booked</small><b>'+bk.length+'</b><span>'+(bk.length==1?"class":"classes")+'</span></div>';
+if(has&&np)t+='<div class="due"><small>Not paid yet</small><b>'+np+'</b><span>'+(np==1?"class":"classes")+'</span></div>';
+bar.querySelector(".ptiles").innerHTML=t;
+if(all.length&&has){bar.querySelector(".pstrip").innerHTML=all.map(function(d){return '<span class="'+(paid.indexOf(d)>=0?"p":"")+(d<td?" h":"")+'" title="'+d+'">'+d.slice(5).replace("-","/")+'</span>'}).join("");
+bar.querySelector(".legend").textContent="Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.";
+var h=bar.querySelector(".pb-head");h.textContent=np?c(np)+" not paid yet":(ahead?c(ahead)+" paid ahead":"All your held classes are paid");
+bar.classList.toggle("due",np>0);bar.querySelector("summary i").innerHTML=np?"!":"&#10003;"}})()</script>"""
+
+
+def pay_bar(pay, booked=None):
+    """The payment bar pinned to the bottom (tap to expand): last payment, classes paid ahead, classes booked, classes not paid yet.
+    Never shows prices. The numbers are worked out in the browser from today's date, so held classes update by themselves."""
     e = html.escape
     if pay.get("status") == "paid":
         head, sub = f'Paid through {e(pay["through"])}', "Thank you!"
@@ -389,20 +414,18 @@ def pay_bar(pay):
         head, sub = e(pay["head"]), ""
     else:
         head, sub = "Payments", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
-    strip = ""
-    pd_, od_ = pay.get("paid_dates", []), pay.get("owed_dates", [])
-    if pd_ or od_:
-        td = datetime.date.today().isoformat()
-        chips = "".join(
-            f'<span class="{"p" if d in pd_ else ""}{" h" if d <= td else ""}" title="{d}: {"paid" if d in pd_ else "not paid yet"}">'
-            f'{d[5:].replace("-", "/")}</span>' for d in sorted(set(pd_) | set(od_)))
-        strip = (f'<div class="pstrip">{chips}</div>'
-                 '<div class="legend">Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.</div>')
+    pays = pay.get("payments") or []
+    data = {"paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "booked": booked or [],
+            "last": ({"date": pays[-1]["date"], "classes": pays[-1]["classes"]} if pays else None)}
     due = pay.get("status") == "due"
-    more = f'<div class="more">{sub if due else ""}{strip}</div>' if (strip or due) else ""
+    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or data["last"] or data["booked"])
+    more = (f'<div class="more"><div class="ptiles"></div><div class="pstrip"></div><div class="legend"></div>'
+            f'{"<p class=pnote>Message Bianca if you have any questions.</p>" if due else ""}</div>') if show else ""
     tip = "<small>Details &#9652;</small>" if more else ""
-    return (f'<div class="paybar{" due" if due else ""}"><details><summary><i>{"!" if due else "&#10003;"}</i>'
-            f'<b>{head}</b>{tip}</summary>{more}</details></div>')
+    attr = f" data-pay='{html.escape(json.dumps(data), quote=True)}'" if show else ""
+    bar = (f'<div class="paybar{" due" if due else ""}"{attr}><details><summary><i>{"!" if due else "&#10003;"}</i>'
+           f'<b class="pb-head">{head}</b>{tip}</summary>{more}</details></div>')
+    return bar + (PAY_JS if show else "")
 
 
 def pay_html(pay):
@@ -553,7 +576,7 @@ for st in ACTIVE:
         os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
         out += keep_pack(st, names)
         out += testimonial(st, sum(1 for c in cards if c["student"] in {m["id"] for m in names} and week_key(c)))
-        out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
+        out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"], st.get("booked_dates")) if st.get("payment") else "") + present_js(st) + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
             os.makedirs(f"{ROOT}/s/{sl}", exist_ok=True)
@@ -630,7 +653,7 @@ for st in ACTIVE:
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     out += keep_pack(st)
     out += testimonial(st, len(weekly))
-    out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"]) if st.get("payment") else "") + present_js(st) + "</body>")
+    out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"], st.get("booked_dates")) if st.get("payment") else "") + present_js(st) + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
 

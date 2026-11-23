@@ -16,13 +16,22 @@ def norm(t):
     return "".join(c for c in unicodedata.normalize("NFKD", t.lower().strip()) if not unicodedata.combining(c)).replace("ı", "i")
 
 
+def raw_day(start):
+    return start[:10]  # the lesson's date in Bianca's calendar
+
+
 def main():
     events = json.load(open(sys.argv[1])); apply = "--apply" in sys.argv
+    if isinstance(events, dict):  # the raw Google Calendar export (what the calendar tool saves): keep title + start of live events
+        events = [{"summary": e.get("summary", ""), "start": e["start"].get("dateTime") or e["start"].get("date")}
+                  for e in events["events"] if e.get("status") != "cancelled"]
     students = json.load(open(f"{ROOT}/private/students.json"))
     by_id = {s["id"]: s for s in students}
-    by_name = {norm(s["name"]): s["id"] for s in students if not s.get("members")}
+    # Preply students are not scheduled in this calendar (their times come from the board), so never touch them
+    by_name = {norm(s["name"]): s["id"] for s in students if not s.get("members") and "preply" not in (s.get("payment") or {}).get("via", "").lower()}
     now = datetime.datetime.now(datetime.timezone.utc)
-    best = {}
+    best, booked = {}, {}
+    horizon = now + datetime.timedelta(days=28)
     for e in events:
         key = norm(e["summary"]); ids = TITLES.get(key) or ([by_name[key]] if key in by_name else [])
         if not ids:
@@ -31,6 +40,8 @@ def main():
         if when <= now:
             continue
         for i in ids:
+            if when <= horizon:
+                booked.setdefault(i, set()).add(raw_day(e["start"]))
             if i not in best or when < best[i][0]:
                 best[i] = (when, e["start"])
     n = 0
@@ -41,6 +52,10 @@ def main():
                 print(f"  {t['name']}: {t.get('next_class')}  ->  {raw}"); n += 1
                 t["next_class"] = raw
             t["calendar_sync"] = True
+        for t in targets:
+            new = sorted(booked.get(i, ()))
+            if t.get("booked_dates") != new:
+                t["booked_dates"] = new; n += 1
     if not n:
         print("  site already matches the calendar")
     if not apply:

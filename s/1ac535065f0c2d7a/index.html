@@ -39,7 +39,14 @@ body{font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;back
 .paybar summary i{font-style:normal;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;background:#e3f3e7;color:#1f7a3a;flex-shrink:0}
 .paybar.due summary i{background:var(--gold-soft);color:#3C518A}
 .paybar summary small{color:var(--dim);margin-left:auto;font-size:.74rem}
-.paybar .more{padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
+.ptiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:2px 0 12px}
+.ptiles>div{background:var(--bg);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.ptiles small{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.ptiles b{font-size:1.25rem;line-height:1.15;color:var(--navy);font-weight:800}
+.ptiles span{font-size:.78rem;color:var(--dim)}
+.ptiles .due{background:var(--gold-soft)}.ptiles .due b{color:#8a6d1c}
+.pnote{margin:8px 0 0}
+.paybar .more{max-height:60vh;overflow:auto;padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
 body:has(.paybar){padding-bottom:56px}
 .pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
 .main:has(.duo){max-width:1040px}
