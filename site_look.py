@@ -9,7 +9,8 @@ BLOCK = START + """
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 body,button,input,textarea,select{font-family:"Inter","Helvetica Neue",Arial,sans-serif}
-h1,h2,h3,.term,.grp-term,.pc-h,.edit .now,.hw-title{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif!important;font-weight:800!important;letter-spacing:-.02em!important}
+h1,h2,h3,.hw-title{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif!important;font-weight:800!important;letter-spacing:-.02em!important}
+.term,.grp-term,.pc-h,.edit .now,.dlab,.pp-h,.step b,.verb{font-family:"Inter","Helvetica Neue",Arial,sans-serif!important;font-weight:700!important;letter-spacing:-.01em!important}
 .pc-h{font-size:23px!important;line-height:1.2!important}
 .card{border:0!important;border-radius:24px!important;box-shadow:none!important}
 .pp-row{grid-template-columns:4.6em 1fr 5.8em!important}.pp-n{white-space:nowrap}
