@@ -519,8 +519,7 @@ def share_section(st):
           "she's offering a free consultation to anyone I share this with:\n\U0001F4AC WhatsApp her: wa.me/16047354550\n"
           f"\U0001F4C5 Or book at realenglisherrors.com and use the code {code} at checkout")
     t2 = ("I just finished 12 sessions with Bianca at Real English Errors. If you'd like to find your own real English errors:\n"
-          "\U0001F4AC WhatsApp her: wa.me/16047354550\n"
-          f"\U0001F4C5 Or book at realenglisherrors.com and mention the code {pub}")
+          f"\U0001F4C5 Book at realenglisherrors.com and mention the code {pub}")
     def card(title, desc, img, text, name):
         return (f'<div class="sharec"><h3>{title}</h3><p>{desc}</p><img src="{img}" alt="Your results picture" loading="lazy">'
                 f'<div class="shbtns"><a class="btn" href="{img}" download="{name}">Download</a>'
