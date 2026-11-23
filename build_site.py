@@ -388,22 +388,22 @@ def next_chip(st):
 PAY_JS = """<script>(function(){var bar=document.querySelector(".paybar[data-pay]");if(!bar)return;var P;try{P=JSON.parse(bar.getAttribute("data-pay"))}catch(e){return}
 var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],n=new Date(),td=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2);
 function f(d){return M[+d.slice(5,7)-1]+" "+(+d.slice(8))}function c(k){return k+(k==1?" class":" classes")}
-var paid=P.paid||[],owed=P.owed||[],bk=(P.booked||[]).filter(function(d){return d>=td}),has=paid.length||owed.length||(P.last&&1);
-var all=[];paid.concat(owed,bk).forEach(function(d){if(all.indexOf(d)<0)all.push(d)});all.sort();
+var paid=P.paid||[],owed=P.owed||[],has=paid.length||owed.length||(P.last&&1);
+var all=[];paid.concat(owed).forEach(function(d){if(all.indexOf(d)<0)all.push(d)});all.sort();
 var np=all.filter(function(d){return d<td&&paid.indexOf(d)<0}).length,ahead=paid.filter(function(d){return d>=td}).length;
 var t='';if(P.last)t+='<div><small>Last payment</small><b>'+f(P.last.date)+'</b><span>'+c(P.last.classes)+'</span></div>';
-if(has)t+='<div><small>Paid ahead</small><b>'+ahead+'</b><span>'+(ahead==1?"class":"classes")+'</span></div>';
-t+='<div><small>Booked</small><b>'+bk.length+'</b><span>'+(bk.length==1?"class":"classes")+'</span></div>';
+if(has)t+='<div><small>Prepaid</small><b>'+ahead+'</b><span>'+(ahead==1?"class":"classes")+'</span></div>';
 if(has&&np)t+='<div class="due"><small>Not paid yet</small><b>'+np+'</b><span>'+(np==1?"class":"classes")+'</span></div>';
+if(!t){var m=bar.querySelector(".more"),tp=bar.querySelector("summary small");if(m)m.remove();if(tp)tp.remove();return}
 bar.querySelector(".ptiles").innerHTML=t;
 if(all.length&&has){bar.querySelector(".pstrip").innerHTML=all.map(function(d){return '<span class="'+(paid.indexOf(d)>=0?"p":"")+(d<td?" h":"")+'" title="'+d+'">'+d.slice(5).replace("-","/")+'</span>'}).join("");
 bar.querySelector(".legend").textContent="Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.";
-var h=bar.querySelector(".pb-head");h.textContent=np?c(np)+" not paid yet":(ahead?c(ahead)+" paid ahead":"All your held classes are paid");
+var h=bar.querySelector(".pb-head");h.textContent=np?c(np)+" not paid yet":(ahead?c(ahead)+" prepaid":"All your held classes are paid");
 bar.classList.toggle("due",np>0);bar.querySelector("summary i").innerHTML=np?"!":"&#10003;"}})()</script>"""
 
 
 def pay_bar(pay, booked=None):
-    """The payment bar pinned to the bottom (tap to expand): last payment, classes paid ahead, classes booked, classes not paid yet.
+    """The payment bar pinned to the bottom (tap to expand): last payment, classes prepaid, classes not paid yet.
     Never shows prices. The numbers are worked out in the browser from today's date, so held classes update by themselves."""
     e = html.escape
     if pay.get("status") == "paid":
@@ -415,10 +415,10 @@ def pay_bar(pay, booked=None):
     else:
         head, sub = "Payments", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
     pays = pay.get("payments") or []
-    data = {"paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "booked": booked or [],
+    data = {"paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "booked": [],
             "last": ({"date": pays[-1]["date"], "classes": pays[-1]["classes"]} if pays else None)}
     due = pay.get("status") == "due"
-    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or data["last"] or data["booked"])
+    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or data["last"])
     more = (f'<div class="more"><div class="ptiles"></div><div class="pstrip"></div><div class="legend"></div>'
             f'{"<p class=pnote>Message Bianca if you have any questions.</p>" if due else ""}</div>') if show else ""
     tip = "<small>Details &#9652;</small>" if more else ""
