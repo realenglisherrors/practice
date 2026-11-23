@@ -463,12 +463,13 @@ def keep_pack(st, members=None):
     if not st.get("handover"):  # only from hand-over until offboarding (keeps the public repo small)
         return ""
     ids = [m["id"] for m in members] if members else [st["id"]]
-    files = []
+    files, seen = [], set()
     for c in cards:
-        if c["student"] in ids and c["href"] != st.get("fixfile") and os.path.exists(f"{ROOT}/{c['href']}".replace("%20", " ")):
+        if c["student"] in ids and c["href"] != st.get("fixfile") and c["href"] not in seen and os.path.exists(f"{ROOT}/{c['href']}".replace("%20", " ")):
             k = week_key(c)
             who = next((m["name"] for m in members if m["id"] == c["student"]), "") if members else ""
             nm = (f"Cycle {k[0]} " if k and k[0] > 1 else "") + (f"Session {k[1]} Homework" if k else c["title"])
+            seen.add(c["href"])
             files.append((f"{ROOT}/{c['href']}".replace("%20", " "), f"Homework/{(who + ' - ') if who else ''}{nm}.html"))
     if st.get("fixfile") and os.path.exists(f"{ROOT}/{st['fixfile']}"):
         files.append((f"{ROOT}/{st['fixfile']}", f"{st['name']} - Fix File.html"))
