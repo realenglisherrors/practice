@@ -502,6 +502,45 @@ TSTYLE = """<style>.tform .tq{display:block;margin:18px 0 0}.tform .tq b{display
 .tform textarea:focus{outline:2px solid var(--gold)}.tps{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.tp{display:inline-flex;gap:6px;align-items:center;padding:7px 14px;border-radius:999px;background:var(--card);font-size:.86rem;cursor:pointer}</style>"""
 
 
+def share_section(st):
+    """Replaces the testimonial form: two sharing pictures (with a gift code, and a public one with no name on it) + the same fixed message for everyone.
+    Pictures live in private/share/<id>/code.png and public.png (made with the sharing-image skill) and are copied next to the student's page."""
+    if not st.get("handover"):
+        return ""
+    src = f"{ROOT}/private/share/{st['id']}"
+    if not (os.path.exists(f"{src}/code.png") and os.path.exists(f"{src}/public.png")):
+        return ""
+    os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
+    shutil.copy(f"{src}/code.png", f"{ROOT}/s/{st['slug']}/share-with-code.png")
+    shutil.copy(f"{src}/public.png", f"{ROOT}/s/{st['slug']}/share-public.png")
+    code = st.get("share_code") or "FROM" + re.sub(r"[^A-Z]", "", st["name"].upper())
+    pub = st.get("public_code", "")
+    t1 = ("I just finished 12 sessions with Bianca at Real English Errors and wanted to share. If you'd like to find your own real English errors, "
+          "she's offering a free consultation to anyone I share this with:\n\U0001F4AC WhatsApp her: wa.me/16047354550\n"
+          f"\U0001F4C5 Or book at realenglisherrors.com and use the code {code} at checkout")
+    t2 = ("I just finished 12 sessions with Bianca at Real English Errors. If you'd like to find your own real English errors:\n"
+          "\U0001F4AC WhatsApp her: wa.me/16047354550\n"
+          f"\U0001F4C5 Or book at realenglisherrors.com and mention the code {pub}")
+    def card(title, desc, img, text, name):
+        return (f'<div class="sharec"><h3>{title}</h3><p>{desc}</p><img src="{img}" alt="Your results picture" loading="lazy">'
+                f'<div class="shbtns"><a class="btn" href="{img}" download="{name}">Download</a>'
+                f'<button type="button" class="btn ghost" data-copy="{html.escape(text, quote=True)}">Copy message</button></div></div>')
+    return ('<div class="sec"><h2>Share what you learned</h2><small>Only if you want to. Neither picture shows your errors.</small></div>'
+            + card("For people you know", "Your results, plus a free consultation for them with your code.", "share-with-code.png", t1, "my-results-with-code.png")
+            + card("To post anywhere", "Your results with no name on it, for groups or social media.", "share-public.png", t2, "my-results.png")
+            + SHARE_JS)
+
+
+SHARE_JS = """<style>.sharec{background:var(--card);border-radius:24px;padding:18px;margin-bottom:14px}.sharec h3{font-weight:800;letter-spacing:-.02em;font-size:1.15rem}
+.sharec p{color:var(--dim);font-size:.9rem;margin:4px 0 12px}.sharec img{display:block;width:100%;max-width:300px;max-height:420px;object-fit:cover;object-position:top;border-radius:14px;margin:0 auto 14px}
+.shbtns{display:flex;gap:10px;flex-wrap:wrap}.shbtns .btn{flex:1;justify-content:center;min-height:48px;cursor:pointer;font-family:inherit}
+.btn.ghost{background:transparent;border:2px solid var(--navy);color:var(--navy)}</style>
+<script>document.addEventListener("click",function(e){var b=e.target.closest("[data-copy]");if(!b)return;var t=b.getAttribute("data-copy");
+function ok(){var o=b.textContent;b.textContent="Copied!";setTimeout(function(){b.textContent=o},1800)}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fb)}else fb();
+function fb(){var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(x){}a.remove()}});</script>"""
+
+
 def testimonial(st, n_hw):
     """Hand-over only: a short, open testimonial form. It sends to Bianca the same way the homework does (WhatsApp, email or copy)."""
     if not st.get("handover"):
@@ -580,7 +619,7 @@ for st in ACTIVE:
             out += '<p class="desc" style="margin-top:22px;text-align:center">Your shared Fix File opens after session 11.</p>'
         os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
         out += keep_pack(st, names)
-        out += testimonial(st, sum(1 for c in cards if c["student"] in {m["id"] for m in names} and week_key(c)))
+        out += share_section(st)
         out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"], st.get("booked_dates")) if st.get("payment") else "") + present_js(st) + "</body>")
         # the pair's own name AND each member's first name open this same page
         for sl in {st["slug"]} | {m["slug"] for m in names}:
@@ -657,7 +696,7 @@ for st in ACTIVE:
         out += PROMO
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     out += keep_pack(st)
-    out += testimonial(st, len(weekly))
+    out += share_section(st)
     out += "</main>" + TAIL.replace("</body>", NEXT_JS + (pay_bar(st["payment"], st.get("booked_dates")) if st.get("payment") else "") + present_js(st) + "</body>")
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     open(f"{ROOT}/s/{st['slug']}/index.html", "w").write(out)
