@@ -30,9 +30,7 @@ FIXCSS = """<style>
 .rev,.tier,.pushsum,.send,.gift,.msg{border:0!important;border-radius:20px!important;background:var(--tint)!important}
 .card{background:var(--surface)!important}
 .card.easy,.card.g{background:#e6f4ea!important;box-shadow:inset 0 0 0 2px #2f8a4e!important}
-.card.tm,.card.m{background:#f6eedb!important;box-shadow:inset 0 0 0 2px #b98d2c!important}
-.card.tb,.card.b{background:#f6e6e2!important;box-shadow:inset 0 0 0 2px #a34a3a!important}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card.easy,:root:not([data-theme="light"]) .card.g{background:#1d3a28!important}:root:not([data-theme="light"]) .card.tm,:root:not([data-theme="light"]) .card.m{background:#3a3120!important}:root:not([data-theme="light"]) .card.tb,:root:not([data-theme="light"]) .card.b{background:#3e2421!important}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card.easy,:root:not([data-theme="light"]) .card.g{background:#1d3a28!important}}
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--gold-soft:#E6EAF4}}
 :root[data-theme="light"]{--gold-soft:#E6EAF4}
 </style>
