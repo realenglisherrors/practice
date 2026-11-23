@@ -53,7 +53,12 @@ body{font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',sans-serif;back
 .ptiles b{font-size:1.25rem;line-height:1.15;color:var(--navy);font-weight:800}
 .ptiles span{font-size:.78rem;color:var(--dim)}
 .ptiles .due{background:var(--gold-soft)}.ptiles .due b{color:#8a6d1c}
-.pnote{margin:8px 0 0}
+.pdetail h4{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:14px 0 6px;font-weight:700}
+.prow{background:var(--bg);border-radius:14px;padding:10px 12px;margin-bottom:6px}
+.prow>div{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.prow b{font-size:1rem;color:var(--navy);font-weight:800}.prow span{font-size:.85rem;color:var(--navy);font-weight:600}
+.prow small{display:block;margin-top:3px;font-size:.78rem;color:var(--dim);line-height:1.4}
+.pnote{margin:10px 0 0}
 .paybar .more{max-height:60vh;overflow:auto;padding:0 20px 12px;font-size:.8rem;color:var(--dim)}
 body:has(.paybar){padding-bottom:56px}
 .pay .legend{font-size:.72rem;color:var(--dim);margin-top:6px}
@@ -387,40 +392,39 @@ def next_chip(st):
 
 PAY_JS = """<script>(function(){var bar=document.querySelector(".paybar[data-pay]");if(!bar)return;var P;try{P=JSON.parse(bar.getAttribute("data-pay"))}catch(e){return}
 var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],n=new Date(),td=n.getFullYear()+"-"+("0"+(n.getMonth()+1)).slice(-2)+"-"+("0"+n.getDate()).slice(-2);
-function f(d){return M[+d.slice(5,7)-1]+" "+(+d.slice(8))}function c(k){return k+(k==1?" class":" classes")}
-var paid=P.paid||[],owed=P.owed||[],has=paid.length||owed.length||(P.last&&1);
-var all=[];paid.concat(owed).forEach(function(d){if(all.indexOf(d)<0)all.push(d)});all.sort();
-var np=all.filter(function(d){return d<td&&paid.indexOf(d)<0}).length,ahead=paid.filter(function(d){return d>=td}).length;
-var t='';if(P.last)t+='<div><small>Last payment</small><b>'+f(P.last.date)+'</b><span>'+c(P.last.classes)+'</span></div>';
-if(has)t+='<div><small>Prepaid</small><b>'+ahead+'</b><span>'+(ahead==1?"class":"classes")+'</span></div>';
-if(has&&np)t+='<div class="due"><small>Not paid yet</small><b>'+np+'</b><span>'+(np==1?"class":"classes")+'</span></div>';
-if(!t){var m=bar.querySelector(".more"),tp=bar.querySelector("summary small");if(m)m.remove();if(tp)tp.remove();return}
-bar.querySelector(".ptiles").innerHTML=t;
-if(all.length&&has){bar.querySelector(".pstrip").innerHTML=all.map(function(d){return '<span class="'+(paid.indexOf(d)>=0?"p":"")+(d<td?" h":"")+'" title="'+d+'">'+d.slice(5).replace("-","/")+'</span>'}).join("");
-bar.querySelector(".legend").textContent="Each circle is a class. Filled = paid. Outline = not paid yet. Ring = class already held.";
-var h=bar.querySelector(".pb-head");h.textContent=np?c(np)+" not paid yet":(ahead?c(ahead)+" prepaid":"All your held classes are paid");
-bar.classList.toggle("due",np>0);bar.querySelector("summary i").innerHTML=np?"!":"&#10003;"}})()</script>"""
+function f(d){return M[+d.slice(5,7)-1]+" "+(+d.slice(8))}function fl(a){return a.map(f).join(", ")}function c(k){return k+(k==1?" class":" classes")}
+var pays=(P.pays||[]).slice().sort(function(x,y){return x.date<y.date?1:-1}),paid=P.paid||[],owed=P.owed||[],cal=P.cal||[];
+if(!(pays.length||paid.length||owed.length)){var m0=bar.querySelector(".more"),t0=bar.querySelector("summary small");if(m0)m0.remove();if(t0)t0.remove();return}
+var due=owed.slice();cal.forEach(function(d){if(d<td&&paid.indexOf(d)<0&&due.indexOf(d)<0)due.push(d)});due.sort();
+var pre=paid.filter(function(d){return d>=td}).sort(),cov={};pays.forEach(function(p){(p.dates||[]).forEach(function(d){cov[d]=1})});
+var earlier=paid.filter(function(d){return !cov[d]}).sort();
+var h='<div class="ptiles"><div class="'+(due.length?"due":"")+'"><small>You owe</small><b>'+(due.length?c(due.length):"Nothing")+'</b>'+(due.length?'<span>'+fl(due)+'</span>':'<span>All held classes are paid</span>')+'</div>'
++'<div><small>Prepaid</small><b>'+c(pre.length)+'</b>'+(pre.length?'<span>'+fl(pre)+'</span>':'<span>None left</span>')+'</div></div>';
+if(pays.length||earlier.length){h+='<h4>Your payments</h4>';
+pays.forEach(function(p){h+='<div class="prow"><div><b>'+f(p.date)+'</b><span>'+c(p.classes)+'</span></div>'+((p.dates&&p.dates.length)?'<small>Paid for: '+fl(p.dates)+'</small>':'')+'</div>'});
+if(earlier.length)h+='<div class="prow"><div><b>Earlier</b><span>'+c(earlier.length)+'</span></div><small>Paid for: '+fl(earlier)+'</small></div>'}
+bar.querySelector(".pdetail").innerHTML=h;
+var hd=bar.querySelector(".pb-head");hd.textContent=due.length?"You owe "+c(due.length):(pre.length?c(pre.length)+" prepaid":"All your classes are paid");
+bar.classList.toggle("due",due.length>0);bar.querySelector("summary i").innerHTML=due.length?"!":"&#10003;"})()</script>"""
 
 
 def pay_bar(pay, booked=None):
-    """The payment bar pinned to the bottom (tap to expand): last payment, classes prepaid, classes not paid yet.
-    Never shows prices. The numbers are worked out in the browser from today's date, so held classes update by themselves."""
+    """The payment bar pinned to the bottom (tap to expand): what you owe, what is prepaid, and every payment with the classes it covered.
+    Never shows prices. The numbers are worked out in the browser from today's date, so classes held since the last build count by themselves."""
     e = html.escape
     if pay.get("status") == "paid":
-        head, sub = f'Paid through {e(pay["through"])}', "Thank you!"
+        head = f'Paid through {e(pay["through"])}'
     elif pay.get("status") == "via":
-        head, sub = f'Payments go through {e(pay["via"])}', ""
+        head = f'Payments go through {e(pay["via"])}'
     elif pay.get("status") == "info":
-        head, sub = e(pay["head"]), ""
+        head = e(pay["head"])
     else:
-        head, sub = "Payments", e(pay.get("detail", "")) + ". Message Bianca if you have any questions."
+        head = "Payments"
     pays = pay.get("payments") or []
-    data = {"paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "booked": [],
-            "last": ({"date": pays[-1]["date"], "classes": pays[-1]["classes"]} if pays else None)}
+    data = {"pays": pays, "paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "cal": booked or []}
     due = pay.get("status") == "due"
-    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or data["last"])
-    more = (f'<div class="more"><div class="ptiles"></div><div class="pstrip"></div><div class="legend"></div>'
-            f'{"<p class=pnote>Message Bianca if you have any questions.</p>" if due else ""}</div>') if show else ""
+    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or pays)
+    more = '<div class="more"><div class="pdetail"></div><p class="pnote">Questions about your payments? Message Bianca.</p></div>' if show else ""
     tip = "<small>Details &#9652;</small>" if more else ""
     attr = f" data-pay='{html.escape(json.dumps(data), quote=True)}'" if show else ""
     bar = (f'<div class="paybar{" due" if due else ""}"{attr}><details><summary><i>{"!" if due else "&#10003;"}</i>'

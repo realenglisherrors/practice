@@ -45,7 +45,7 @@ def payment_from_board(b):
     if paid or owed:
         out["paid_dates"], out["owed_dates"] = paid, owed
     # when each payment was made and how many classes it bought. Never an amount: the site shows classes, not prices.
-    recs = [{"date": p["date"], "classes": p.get("classes") or len(p.get("dates", []))} for p in b.get("payments", []) if p.get("date")]
+    recs = [{"date": p["date"], "classes": p.get("classes") or len(p.get("dates", [])), "dates": sorted(p.get("dates", []))} for p in b.get("payments", []) if p.get("date")]
     if recs:
         out["payments"] = sorted(recs, key=lambda r: r["date"])
     return out
