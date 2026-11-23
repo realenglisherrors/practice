@@ -8,7 +8,8 @@ import json, os, sys, datetime, subprocess
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # calendar title -> site student id(s). Anything not listed here is skipped (e.g. "Dan (visit)", "Romanian Class").
-TITLES = {"h&m": ["hm"]}  # Beatriz & Oscar are left out on purpose: their page shows no next class (alternating cycle)
+TITLES = {"h&m": ["hm"], "oscar and beatriz": ["bo"], "beatriz and oscar": ["bo"]}
+NO_NEXT = {"bo"}  # Beatriz & Oscar: the calendar only feeds their booked lessons; their page shows no next class (alternating cycle)
 
 
 def norm(t):
@@ -48,6 +49,8 @@ def main():
     for i, (when, raw) in sorted(best.items()):
         targets = [by_id[i]] + [by_id[m] for m in by_id[i].get("members", [])]
         for t in targets:
+            if i in NO_NEXT:
+                continue
             if t.get("next_class") != raw:
                 print(f"  {t['name']}: {t.get('next_class')}  ->  {raw}"); n += 1
                 t["next_class"] = raw
