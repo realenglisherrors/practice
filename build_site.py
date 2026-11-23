@@ -176,6 +176,10 @@ em,i,.subtitle,.band h1 em,.promo .pl em{font-style:normal!important}
 @media(max-width:360px){.band img{width:84px!important}.band-in{gap:12px!important}}
 /* desktop: the Fix File hero: text on the left, the logo big and faded on the right */
 @media(min-width:761px){.band-in{max-width:1088px!important}.band-in>div{flex:1 1 auto;min-width:0}.band img{order:2;margin-left:auto;width:190px!important;opacity:.38;margin-top:58px}}
+.addcal{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:12px;font-size:.8rem;color:rgba(255,255,255,.8)}
+.addcal a{color:#fff;font-weight:700;text-decoration:none;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:7px 14px;min-height:36px;display:inline-flex;align-items:center}
+.addcal a:hover,.addcal a:focus{background:rgba(255,255,255,.15);outline:none}
+@media(max-width:600px){.addcal{margin-top:14px}.addcal span{flex:0 0 100%}.addcal a{flex:1;justify-content:center;min-height:44px}}
 .nextc{top:10px!important;right:20px!important}
 @media(max-width:600px){.nextc{top:8px!important;right:14px!important}}
 /* phones: nothing floats. Row 1 = small logo + next-class pill, row 2 = the text, full width, button full width */
@@ -377,9 +381,20 @@ for _st in ACTIVE:
         _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
 
-NEXT_JS = """<script>(function(){var e=document.querySelector(".nextc");if(!e)return;var d=new Date(e.getAttribute("data-t"));if(isNaN(d)||d<new Date())return;
+NEXT_JS = r"""<script>(function(){var e=document.querySelector(".nextc");if(!e)return;var d=new Date(e.getAttribute("data-t"));if(isNaN(d)||d<new Date())return;
 var z=e.getAttribute("data-z"),o={weekday:"short",month:"short",day:"numeric"},t={hour:"numeric",minute:"2-digit"};if(z){o.timeZone=z;t.timeZone=z;}
-e.querySelector("b").textContent=d.toLocaleDateString("en-US",o)+" \u00b7 "+d.toLocaleTimeString("en-US",t);e.style.display="block";})()</script>"""
+e.querySelector("b").textContent=d.toLocaleDateString("en-US",o)+" \u00b7 "+d.toLocaleTimeString("en-US",t);e.style.display="block";
+var m=+e.getAttribute("data-m")||50,end=new Date(d.getTime()+m*60000),meet=e.getAttribute("data-meet")||"",ttl="English class with Bianca";
+function u(x){return x.toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"")}
+var desc=(meet?"Join: "+meet+"\n":"")+"Your page: "+location.href.split("#")[0];
+var ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Real English Errors//EN","BEGIN:VEVENT","UID:"+u(d)+"@realenglisherrors.com","DTSTAMP:"+u(new Date()),"DTSTART:"+u(d),"DTEND:"+u(end),"SUMMARY:"+ttl,
+(meet?"LOCATION:"+meet:"LOCATION:Online"),"DESCRIPTION:"+desc.replace(/\n/g,"\\n"),"BEGIN:VALARM","TRIGGER:-PT15M","ACTION:DISPLAY","DESCRIPTION:Class in 15 minutes","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+var g="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(ttl)+"&dates="+u(d)+"/"+u(end)+"&details="+encodeURIComponent(desc)+"&location="+encodeURIComponent(meet||"Online");
+var h=document.querySelector(".btns");if(!h){h=document.createElement("div");h.className="btns";(document.querySelector(".band-in>div:not(.nextc)")||document.querySelector(".band")).appendChild(h)}
+var r=document.createElement("div");r.className="addcal";r.innerHTML='<span>Add next class to your calendar</span>';
+var a1=document.createElement("a");a1.href="data:text/calendar;charset=utf-8,"+encodeURIComponent(ics);a1.download="English class.ics";a1.textContent="iPhone / Outlook";
+var a2=document.createElement("a");a2.href=g;a2.target="_blank";a2.rel="noopener";a2.textContent="Google Calendar";
+r.appendChild(a1);r.appendChild(a2);h.parentNode.insertBefore(r,h.nextSibling);})()</script>"""
 
 
 def next_chip(st):
@@ -387,7 +402,9 @@ def next_chip(st):
     if not nc:
         return ""
     z = f' data-z="{html.escape(st["tz"])}"' if st.get("tz") else ""
-    return f'<div class="nextc" data-t="{html.escape(nc)}"{z}><i>Next class</i><b></b></div>'
+    m = f' data-m="{int(st["next_minutes"])}"' if st.get("next_minutes") else ""
+    meet = f' data-meet="{html.escape(st["meet"], quote=True)}"' if st.get("meet") else ""
+    return f'<div class="nextc" data-t="{html.escape(nc)}"{z}{m}{meet}><i>Next class</i><b></b></div>'
 
 
 PAY_JS = """<script>(function(){var bar=document.querySelector(".paybar[data-pay]");if(!bar)return;var P;try{P=JSON.parse(bar.getAttribute("data-pay"))}catch(e){return}

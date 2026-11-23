@@ -9,7 +9,7 @@ import json, os, sys, datetime, subprocess
 ROOT = os.path.dirname(os.path.abspath(__file__))
 # calendar title -> site student id(s). Anything not listed here is skipped (e.g. "Dan (visit)", "Romanian Class").
 TITLES = {"h&m": ["hm"], "oscar and beatriz": ["bo"], "beatriz and oscar": ["bo"]}
-NO_NEXT = {"bo"}  # Beatriz & Oscar: the calendar only feeds their booked lessons; their page shows no next class (alternating cycle)
+NO_NEXT = set()  # students whose page must not show a next class (none right now: Beatriz & Oscar do show theirs)
 
 
 def norm(t):
@@ -24,7 +24,8 @@ def raw_day(start):
 def main():
     events = json.load(open(sys.argv[1])); apply = "--apply" in sys.argv
     if isinstance(events, dict):  # the raw Google Calendar export (what the calendar tool saves): keep title + start of live events
-        events = [{"summary": e.get("summary", ""), "start": e["start"].get("dateTime") or e["start"].get("date")}
+        events = [{"summary": e.get("summary", ""), "start": e["start"].get("dateTime") or e["start"].get("date"),
+                   "end": (e.get("end") or {}).get("dateTime")}
                   for e in events["events"] if e.get("status") != "cancelled"]
     students = json.load(open(f"{ROOT}/private/students.json"))
     by_id = {s["id"]: s for s in students}
@@ -44,9 +45,9 @@ def main():
             if when <= horizon:
                 booked.setdefault(i, set()).add(raw_day(e["start"]))
             if i not in best or when < best[i][0]:
-                best[i] = (when, e["start"])
+                best[i] = (when, e["start"], e.get("end"))
     n = 0
-    for i, (when, raw) in sorted(best.items()):
+    for i, (when, raw, end) in sorted(best.items()):
         targets = [by_id[i]] + [by_id[m] for m in by_id[i].get("members", [])]
         for t in targets:
             if i in NO_NEXT:
@@ -55,6 +56,10 @@ def main():
                 print(f"  {t['name']}: {t.get('next_class')}  ->  {raw}"); n += 1
                 t["next_class"] = raw
             t["calendar_sync"] = True
+            if end:  # length of the next lesson in minutes, for the Add to calendar button
+                mins = int((datetime.datetime.fromisoformat(end) - datetime.datetime.fromisoformat(raw)).total_seconds() // 60)
+                if t.get("next_minutes") != mins:
+                    t["next_minutes"] = mins; n += 1
         for t in targets:
             new = sorted(booked.get(i, ()))
             if t.get("booked_dates") != new:
