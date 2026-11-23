@@ -101,7 +101,7 @@ def main():
         b = board[bid]
         targets = [s] + [by_id[m] for m in s.get("members", [])]  # a pair's data goes to both members too
         new = {"board": bid}
-        if b.get("nextClass"):
+        if b.get("nextClass") and not s.get("calendar_sync"):  # students synced from Google Calendar keep the calendar time
             new["next_class"] = b["nextClass"] + ":00" + OFFSET
         if b.get("tz"):
             new["tz"] = b["tz"]

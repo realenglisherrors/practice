@@ -24,7 +24,8 @@ FIX = START.replace("-->","-fix-->")  # unused marker kept simple
 FIXCSS = """<style>
 :root{--display:"Montserrat","Helvetica Neue",Arial,sans-serif;--body:"Montserrat","Helvetica Neue",Arial,sans-serif}
 .logo,.hero .logo{border-radius:0!important;box-shadow:none!important}
-.hero .logo{max-width:300px!important;opacity:.38}
+.hero .logo{width:auto!important;max-width:150px!important;max-height:210px!important;opacity:.38}
+@media(max-width:600px){.hero .logo{max-width:84px!important;max-height:116px!important}}
 .hint{font-style:normal!important}
 .rev,.tier,.pushsum,.send,.gift,.msg{border:0!important;border-radius:20px!important;background:var(--tint)!important}
 .card{background:var(--surface)!important}
