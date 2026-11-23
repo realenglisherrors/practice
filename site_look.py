@@ -6,9 +6,9 @@ Generated from restyle.py (the repo runs restyle.py over src/exercises on every 
 import glob, re, sys
 START, END = "<!--ree-site-look-->", "<!--/ree-site-look-->"
 BLOCK = START + """
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-body,button,input,textarea,select{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif}
+body,button,input,textarea,select{font-family:"Inter","Helvetica Neue",Arial,sans-serif}
 h1,h2,h3,.term,.grp-term,.pc-h,.edit .now,.hw-title{font-family:"Montserrat","Helvetica Neue",Arial,sans-serif!important;font-weight:800!important;letter-spacing:-.02em!important}
 .pc-h{font-size:23px!important;line-height:1.2!important}
 .card{border:0!important;border-radius:24px!important;box-shadow:none!important}
@@ -22,7 +22,7 @@ h1,h2,h3,.term,.grp-term,.pc-h,.edit .now,.hw-title{font-family:"Montserrat","He
 """ + END
 FIX = START.replace("-->","-fix-->")  # unused marker kept simple
 FIXCSS = """<style>
-:root{--display:"Montserrat","Helvetica Neue",Arial,sans-serif;--body:"Montserrat","Helvetica Neue",Arial,sans-serif}
+:root{--display:"Montserrat","Helvetica Neue",Arial,sans-serif;--body:"Inter","Helvetica Neue",Arial,sans-serif}
 .logo,.hero .logo{border-radius:0!important;box-shadow:none!important}
 .hero .logo{width:auto!important;max-width:150px!important;max-height:210px!important;opacity:.38}
 @media(max-width:600px){.hero .logo{max-width:84px!important;max-height:116px!important}}
