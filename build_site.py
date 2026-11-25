@@ -423,7 +423,7 @@ def pay_bar(pay, booked=None):
     pays = pay.get("payments") or []
     data = {"pays": pays, "paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "cal": booked or []}
     due = pay.get("status") == "due"
-    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or pays)
+    show = pay.get("status") != "via" and (data["paid"] or data["owed"] or pays or (pay.get("status") == "info" and data["cal"]))
     more = '<div class="more"><div class="pdetail"></div><p class="pnote">Questions about your payments? Message Bianca.</p></div>' if show else ""
     tip = "<small>Details &#9652;</small>" if more else ""
     attr = f" data-pay='{html.escape(json.dumps(data), quote=True)}'" if show else ""
