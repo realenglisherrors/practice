@@ -586,26 +586,31 @@ for st in ACTIVE:
         for m in cols:
             wk = sorted(((week_key(c), c) for c in cards if c["student"] == m["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
             out += f'<section class="col"><div class="sec"><h2>{html.escape(m["name"])}</h2></div>'
+            # the timeline shows from day one, like solo students' pages (no "appears here" placeholder)
+            bywk, latest = {}, 0
             if wk:
                 cyc = max(k[0] for k, _ in wk)
                 out += card_html(wk[0][1], "../../")
                 bywk = {k[1]: c for k, c in wk if k[0] == cyc}
                 latest = max(bywk)
-                total = int(m.get("homeworks", 10))
-                out += '<div class="sec"><h2>12 sessions</h2></div><ol class="tl">'
-                for n in range(1, total + 1):
-                    c = bywk.get(n)
-                    if c:
-                        cur_ = n == latest
-                        out += (f'<li class="{"cur" if cur_ else "done"}"><span class="dot">{str(n) if cur_ else "&#10003;"}</span>'
-                                f'<a class="tl-btn{" cur" if cur_ else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a></li>')
-                    elif n < latest:
-                        out += f'<li class="done"><span class="dot">&#10003;</span><span class="lbl">Session {n} Homework</span><span class="soon">done in class</span></li>'
-                    else:
-                        out += f'<li><span class="dot">{n}</span><span class="lbl">Session {n} Homework</span></li>'
-                out += "</ol>"
+            total = int(m.get("homeworks", 10))
+            out += '<div class="sec"><h2>Your 12 sessions</h2><small>Each homework appears here when it&rsquo;s ready</small></div><ol class="tl">'
+            for n in range(1, total + 1):
+                c = bywk.get(n)
+                if c:
+                    cur_ = n == latest
+                    out += (f'<li class="{"cur" if cur_ else "done"}"><span class="dot">{str(n) if cur_ else "&#10003;"}</span>'
+                            f'<a class="tl-btn{" cur" if cur_ else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a></li>')
+                elif n < latest:
+                    out += f'<li class="done"><span class="dot">&#10003;</span><span class="lbl">Session {n} Homework</span><span class="soon">done in class</span></li>'
+                else:
+                    out += f'<li><span class="dot">{n}</span><span class="lbl">Session {n} Homework</span></li>'
+            if st["fixfile"]:
+                out += f'<li class="fixnode"><span class="dot">&#9733;</span><a class="tl-btn cur" href="../../{html.escape(st["fixfile"])}">Sessions 11 &amp; 12: complete Production Push &rarr;</a></li>'
             else:
-                out += '<p class="desc">Homework appears here when it is ready.</p>'
+                out += '<li class="fixnode"><span class="dot">&#9733;</span><span class="lbl">Sessions 11 &amp; 12: complete Production Push</span></li>'
+            out += ('<li class="note"><span class="dot"></span><span class="soon">We use your Fix File in class for a complete Production Push of everything from the cycle. No new homework.</span></li>'
+                    "</ol>")
             out += "</section>"
         out += "</div>"
         ielts = [c for c in cards if c["student"] == st["id"] and not week_key(c)]
