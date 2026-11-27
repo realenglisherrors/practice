@@ -761,11 +761,15 @@ for st in ACTIVE:
                     '<li class="note"><span class="dot"></span><span class="soon">We use your Fix File in class for a complete Production Push of everything from the cycle. No new homework.</span></li>')
         out += "</ol>"
         older = [(k, c) for k, c in weekly if k[0] < cur_cycle]
-        if older or fix_old:
-            n_old = len(older) + (1 if fix_old else 0)
+        prev = st.get("fixfile_prev") or {}  # a finished cycle's Fix File, once "fixfile" points at the current cycle's
+        if older or fix_old or prev:
+            n_old = len(older) + (1 if fix_old else 0) + (1 if prev else 0)
             out += (f'<details class="arch"><summary><h2>Your archive</h2>'
                     f'<small>Previous cycle{"s" if cur_cycle > 2 else ""} &middot; {n_old} item{"s" if n_old != 1 else ""}</small>'
                     f'<span class="chev" aria-hidden="true"></span></summary><div class="rows">')
+            if prev:
+                out += (f'<a class="row" href="../../{html.escape(prev["href"])}"><span class="badge alt">&#9733;</span>'
+                        f'<span class="wk">Cycle {prev["cycle"]} Fix File</span><span class="sub">Final review</span><span class="go">&rarr;</span></a>')
             if fix_old:
                 out += (f'<a class="row" href="../../{html.escape(fix)}"><span class="badge alt">&#9733;</span>'
                         f'<span class="wk">Cycle {st["fixfile_cycle"]} Fix File</span><span class="sub">Final review</span><span class="go">&rarr;</span></a>')
