@@ -577,10 +577,13 @@ for st in ACTIVE:
         btn = (f'<div class="btns"><a class="btn" href="../../exercises/meet-{st["id"]}.html"><i></i>Join our class on Google Meet</a></div>' if st["meet"] else "")
         out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical-transparent.png" alt="Real English Errors">'
                 f'<div><p class="eyebrow">Your shared page</p><h1 class="hi">Hi, {html.escape(st["name"])}</h1>'
-                '<p class="lede">One page for your shared class: payments for everyone, and a homework column each.</p>'
+                + ('<p class="lede">One page for your shared class: payments and one shared homework each session.</p>' if st.get("shared_homework") else
+                   '<p class="lede">One page for your shared class: payments for everyone, and a homework column each.</p>') +
                 f'{btn}</div>{next_chip(st)}</div></header><main class="main">')
-        out += '<div class="duo">'
-        for m in names:
+        # shared_homework: one homework page per session for the whole pair (cards use the pair's id), so one column
+        cols = [dict(st, name="Your homework")] if st.get("shared_homework") else names
+        out += '<div class="duo">' if len(cols) > 1 else '<div>'
+        for m in cols:
             wk = sorted(((week_key(c), c) for c in cards if c["student"] == m["id"] and week_key(c)), key=lambda x: x[0], reverse=True)
             out += f'<section class="col"><div class="sec"><h2>{html.escape(m["name"])}</h2></div>'
             if wk:
