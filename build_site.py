@@ -396,16 +396,18 @@ function f(d){return M[+d.slice(5,7)-1]+" "+(+d.slice(8))}function fl(a){return 
 var pays=(P.pays||[]).slice().sort(function(x,y){return x.date<y.date?1:-1}),paid=P.paid||[],owed=P.owed||[],cal=P.cal||[];
 if(!(pays.length||paid.length||owed.length)){var m0=bar.querySelector(".more"),t0=bar.querySelector("summary small");if(m0)m0.remove();if(t0)t0.remove();return}
 var due=owed.slice();cal.forEach(function(d){if(d<td&&paid.indexOf(d)<0&&due.indexOf(d)<0)due.push(d)});due.sort();
-var pre=paid.filter(function(d){return d>=td}).sort(),cov={};pays.forEach(function(p){(p.dates||[]).forEach(function(d){cov[d]=1})});
+var pre=paid.filter(function(d){return d>=td}).sort(),cov={};
+/* prepay students: once nothing is prepaid, the next block of N classes is due (oldest unpaid first, then upcoming calendar classes) */
+var N=+P.prepay||0,blk=[];if(N&&!pre.length){blk=due.concat(cal.filter(function(d){return d>=td&&paid.indexOf(d)<0&&due.indexOf(d)<0})).sort().slice(0,N)}pays.forEach(function(p){(p.dates||[]).forEach(function(d){cov[d]=1})});
 var earlier=paid.filter(function(d){return !cov[d]}).sort();
-var h='<div class="ptiles"><div class="'+(due.length?"due":"")+'"><small>You owe</small><b>'+(due.length?c(due.length):"Nothing")+'</b>'+(due.length?'<span>'+fl(due)+'</span>':'<span>All held classes are paid</span>')+'</div>'
+var h='<div class="ptiles">'+(blk.length?'<div class="due"><small>Next payment due</small><b>'+c(N)+'</b><span>'+(blk[0]<td?'Due now':'Due by '+f(blk[0]))+'. Covers '+f(blk[0])+' to '+f(blk[blk.length-1])+(due.length?' ('+due.length+' already held)':'')+'</span></div>':'<div class="'+(due.length?"due":"")+'"><small>You owe</small><b>'+(due.length?c(due.length):"Nothing")+'</b>'+(due.length?'<span>'+fl(due)+'</span>':'<span>All held classes are paid</span>')+'</div>')
 +'<div><small>Prepaid</small><b>'+c(pre.length)+'</b>'+(pre.length?'<span>'+fl(pre)+'</span>':'<span>None left</span>')+'</div></div>';
 if(pays.length||earlier.length){h+='<h4>Your payments</h4>';
 pays.forEach(function(p){h+='<div class="prow"><div><b>'+f(p.date)+'</b><span>'+c(p.classes)+'</span></div>'+((p.dates&&p.dates.length)?'<small>Paid for: '+fl(p.dates)+'</small>':'')+'</div>'});
 if(earlier.length)h+='<div class="prow"><div><b>Earlier</b><span>'+c(earlier.length)+'</span></div><small>Paid for: '+fl(earlier)+'</small></div>'}
 bar.querySelector(".pdetail").innerHTML=h;
-var hd=bar.querySelector(".pb-head");hd.textContent=due.length?"You owe "+c(due.length):(pre.length?c(pre.length)+" prepaid":"All your classes are paid");
-bar.classList.toggle("due",due.length>0);bar.querySelector("summary i").innerHTML=due.length?"!":"&#10003;"})()</script>"""
+var hd=bar.querySelector(".pb-head");hd.textContent=blk.length?"Next payment due: "+c(N):due.length?"You owe "+c(due.length):(pre.length?c(pre.length)+" prepaid":"All your classes are paid");
+bar.classList.toggle("due",due.length>0||blk.length>0);bar.querySelector("summary i").innerHTML=(due.length||blk.length)?"!":"&#10003;"})()</script>"""
 
 
 def pay_bar(pay, booked=None):
@@ -421,7 +423,7 @@ def pay_bar(pay, booked=None):
     else:
         head = "Payments"
     pays = pay.get("payments") or []
-    data = {"pays": pays, "paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "cal": booked or []}
+    data = {"pays": pays, "paid": pay.get("paid_dates", []), "owed": pay.get("owed_dates", []), "cal": booked or [], "prepay": pay.get("prepay")}
     due = pay.get("status") == "due"
     show = pay.get("status") != "via" and (data["paid"] or data["owed"] or pays or (pay.get("status") == "info" and data["cal"]))
     more = '<div class="more"><div class="pdetail"></div><p class="pnote">Questions about your payments? Message Bianca.</p></div>' if show else ""
