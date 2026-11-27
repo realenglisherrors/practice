@@ -118,6 +118,42 @@ def upgrade_header(s):
     return s
 
 
+# --- fix-marks: highlight the changed words in correction cards (Bianca, Nov 26, 2026) ---
+FX_JS = r'''
+/* fix-marks: highlight the words that changed in a correction (was -> now) */
+function fxMark(was,now){
+  if(!was||!now||/[<>]/.test(now)) return now||"";
+  const norm=w=>w.toLowerCase().replace(/[^a-z0-9'’]/g,"");
+  const a=String(was).replace(/<[^>]*>/g,"").split(/\s+/).filter(Boolean).map(norm), bw=String(now).split(/(\s+)/);
+  const b=bw.filter(t=>!/^\s+$/.test(t)&&t!==""), bn=b.map(norm);
+  const n=a.length,m=b.length,L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)L[i][j]=a[i]&&a[i]===bn[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const keep=new Array(m).fill(false);let i=0,j=0;
+  while(i<n&&j<m){ if(a[i]&&a[i]===bn[j]){keep[j]=true;i++;j++;} else if(L[i+1][j]>=L[i][j+1]) i++; else j++; }
+  const wasW=String(was).replace(/<[^>]*>/g,"").split(/\s+/).filter(Boolean);
+  let k=0; return bw.map(t=>{ if(/^\s+$/.test(t)||t==="") return t; const idx=k++;
+    if(keep[idx]||/^\[|\]$/.test(t)||!bn[idx]) return t;
+    const ap=t.search(/['’]/);   /* contraction: it'll -> it'd marks only 'd */
+    if(ap>0&&wasW.some(w=>w.toLowerCase().slice(0,ap+1).replace("’","'")===t.toLowerCase().slice(0,ap+1).replace("’","'")))
+      return t.slice(0,ap)+`<mark class="fx">${t.slice(ap)}</mark>`;
+    return `<mark class="fx">${t}</mark>`; }).join("");
+}
+'''
+FX_CSS = '<style id="fix-marks">.edit .now mark.fx{background:#FFF1B8;color:inherit;padding:0 3px;margin:0 -1px;border-radius:4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}</style>'
+OLD = '<span class="now">${b.now}</span>'
+NEW = '<span class="now">${fxMark(b.was,b.now)}</span>'
+
+
+def fix_marks(s):
+    """Homework pages: highlight the changed words in every correction card. Safe to run twice."""
+    if OLD not in s or 'function fxMark' in s:
+        return s
+    s = s.replace(OLD, NEW)
+    i = s.find('const DATA = {')
+    s = s[:i] + FX_JS.strip() + '\n' + s[i:]
+    return s.replace('</head>', FX_CSS + '</head>', 1)
+
+
 def site_look(s):
     """Return the page with the realenglisherrors.com look (and, for homework pages, the Short / Long switch). Safe to run twice."""
     s2 = re.sub(re.escape(START) + r".*?" + re.escape(END) + r"\n?", "", s, flags=re.S)
@@ -129,6 +165,7 @@ def site_look(s):
         return s2
     s2 = upgrade_header(s2)
     s2 = re.sub(r'(<img[^>]*class="hw-logo"[^>]*src=")(data:image/[^"]+)(")', lambda m: m.group(1) + _get_logo() + m.group(3), s2)
+    s2 = fix_marks(s2)
     s2 = s2.replace("</head>", BLOCK + "\n</head>", 1)
     s2 = re.sub(re.escape(LEN_START) + r".*?" + re.escape(LEN_END) + r"\n?", "", s2, flags=re.S)
     m = re.search(r"const DATA = \{.*?\};\n", s2, flags=re.S)

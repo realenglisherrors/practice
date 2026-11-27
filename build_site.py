@@ -334,6 +334,68 @@ def row_html(c, k, href_prefix):
             f'<span class="sub">{sub}</span><span class="go">&rarr;</span></a>')
 
 
+def fix_counts(path):
+    """Card counts from a Fix File's GROUPS data: total, per group, per session. None if the file can't be read (e.g. locked)."""
+    side = f"{ROOT}/{path}".replace("%20", " ")
+    side = side[:-5] + ".counts.json" if side.endswith(".html") else side + ".counts.json"
+    if os.path.exists(side):  # written next to the Fix File by the fix-file skill (the hosted Fix File itself is locked)
+        try:
+            c = json.load(open(side))
+            return {"total": int(c["total"]), "by": c.get("by", {}), "ses": {int(k): v for k, v in c.get("ses", {}).items()}}
+        except Exception:
+            pass
+    try:
+        t = open(f"{ROOT}/{path}".replace("%20", " "), encoding="utf-8").read()
+        m = re.search(r"(?:const|let|var)\s+GROUPS\s*=\s*(\[.*?\]);\s*\n", t, re.S)
+        G = json.loads(m.group(1))
+    except Exception:
+        return None
+    by, ses = {}, {}
+    for g in G:
+        for it in g["items"]:
+            if len(it) > 6 and it[6]:
+                continue
+            by[g["id"]] = by.get(g["id"], 0) + 1
+            try:
+                n = int(it[5])
+                ses[n] = ses.get(n, 0) + 1
+            except Exception:
+                pass
+    return {"total": sum(by.values()), "by": by, "ses": ses}
+
+
+FIXCARD_CSS = """<style>
+.fixcard{display:flex;flex-direction:column;gap:12px;background:#1F2A4D;color:#fff;border-radius:22px;padding:22px 22px 20px;margin-top:18px;box-shadow:var(--shadow)}
+.fixcard .fc-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fixcard .fc-eye{margin:0;font-family:'Montserrat',system-ui,sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.18em;color:var(--gold)}
+.fixcard .fc-new{margin:0;background:var(--gold);color:#1F2A4D;border-radius:999px;padding:4px 12px;font-size:.74rem;font-weight:800;font-family:'Montserrat',system-ui,sans-serif}
+.fixcard .fc-big{display:flex;align-items:baseline;gap:12px}
+.fixcard .fc-big b{font-family:'Montserrat',system-ui,sans-serif;font-size:3.4rem;font-weight:800;line-height:1}
+.fixcard .fc-big span{font-weight:600;color:#DFE4F4;line-height:1.35}
+.fixcard .fc-split{display:flex;gap:6px}
+.fixcard .fc-split p{margin:0;flex:1;background:rgba(255,255,255,.1);border-radius:12px;padding:8px 10px;font-size:.78rem;color:#DFE4F4}
+.fixcard .fc-split b{display:block;font-size:1.1rem;color:#fff}
+.fixcard .fc-note{margin:0;font-size:.86rem;line-height:1.5;color:#C9D1EC}
+.fixcard a.fc-go{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:999px;background:var(--gold);color:#1F2A4D;font-family:'Montserrat',system-ui,sans-serif;font-weight:800;text-decoration:none}
+.tl .fc-add{margin-left:8px;font-size:.74rem;font-weight:700;color:var(--navy2)}
+</style>"""
+
+
+def fix_card(href, counts, latest):
+    """Option A (Nov 26 2026): the Fix File as a card under This week, during the cycle."""
+    big = new = split = ""
+    if counts:
+        n_new = counts["ses"].get(latest, 0)
+        new = f'<p class="fc-new">+{n_new} from Session {latest}</p>' if n_new else ""
+        big = (f'<div class="fc-big"><b>{counts["total"]}</b><span>words, phrases and patterns so far</span></div>')
+        by = counts["by"]
+        split = ('<div class="fc-split">' + "".join(f'<p><b>{by.get(k, 0)}</b>{lbl}</p>' for k, lbl in
+                 [("grammar", "grammar"), ("vocab", "vocabulary"), ("pron", "sounds")]) + "</div>")
+    return (f'{FIXCARD_CSS}<section class="fixcard"><div class="fc-top"><p class="fc-eye">YOUR FIX FILE</p>{new}</div>{big}{split}'
+            '<p class="fc-note">It grows after every class. At the end of the cycle it&rsquo;s yours to keep, with all your homework inside.</p>'
+            f'<a class="fc-go" href="../../{html.escape(href)}">Open my Fix File &rarr;</a></section>')
+
+
 SALT_FILE = f"{ROOT}/private/salt.txt"
 if not os.path.exists(SALT_FILE):
     open(SALT_FILE, "w").write(secrets.token_hex(16))
@@ -464,6 +526,12 @@ def keep_pack(st, members=None):
     """One zip with the student's Fix File and every homework as a blank copy (the locked pages: no unlocked copy ever goes into the public repo)."""
     if not st.get("handover"):  # only from hand-over until offboarding (keeps the public repo small)
         return ""
+    # Nov 26 2026: the final Fix File holds every homework page (embed_homework.py), so the student downloads ONE file.
+    if st.get("fixfile") and os.path.exists(f"{ROOT}/{st['fixfile']}"):
+        fname = f"{st['name']} - Fix File.html"
+        return ('<div class="sec"><h2>Keep your work</h2></div><p class="desc" style="margin-top:0">Download your Fix File to your phone or computer. '
+                'Every homework page from our cycle is saved inside it, so you can practice any week again, anytime.</p>'
+                f'<div class="btns" style="margin-top:14px"><a class="btn" href="../../{html.escape(st["fixfile"])}" download="{html.escape(fname, quote=True)}"><i></i>Download my work</a></div>')
     ids = [m["id"] for m in members] if members else [st["id"]]
     files, seen = [], set()
     for c in cards:
@@ -647,7 +715,7 @@ for st in ACTIVE:
     if st["meet"]:
         btns += f'<a class="btn" href="../../exercises/meet-{st["id"]}.html"><i></i>Join my class on Google Meet</a>'
     fix_is_old = bool(fix) and bool(weekly) and int(st.get("fixfile_cycle", 1)) < max(k[0] for k, _ in weekly)
-    if fix and not fix_is_old:
+    if fix and not fix_is_old and not weekly:
         btns += f'<a class="btn gold" href="../../{html.escape(fix)}">Open my Fix File</a>'
     btns = f'<div class="btns">{btns}</div>' if btns else ""
     on_cycle = bool(weekly)
@@ -665,13 +733,19 @@ for st in ACTIVE:
         total = int(st.get("homeworks", 10))
         bywk = {k[1]: c for k, c in weekly if k[0] == cur_cycle}
         latest = max(bywk)
+        fix_now = bool(fix) and int(st.get("fixfile_cycle", cur_cycle)) >= cur_cycle
+        fixc = fix_counts(fix) if fix_now else None  # an old cycle's Fix File: its session counts don't belong on this cycle's sessions
+        if fix_now:
+            out += fix_card(fix, fixc, latest)
         out += f'<div class="sec"><h2>Your 12 sessions</h2><small>Each homework appears here when it&rsquo;s ready</small></div><ol class="tl">'
         for n in range(1, total + 1):
             c = bywk.get(n)
             if c:
                 is_cur = (n == latest)
                 cls = "cur" if is_cur else "done"
-                inner = (f'<a class="tl-btn{" cur" if is_cur else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a>')
+                add = (fixc or {}).get("ses", {}).get(n, 0)
+                inner = (f'<a class="tl-btn{" cur" if is_cur else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a>'
+                         + (f'<span class="fc-add">+{add} cards</span>' if add else ""))
                 mark = "&#10003;" if not is_cur else str(n)
             elif n < latest:
                 cls, inner, mark = "done", f'<span class="lbl">Session {n} Homework</span><span class="soon">done in class</span>', "&#10003;"
@@ -680,11 +754,11 @@ for st in ACTIVE:
             out += f'<li class="{cls}"><span class="dot">{mark}</span>{inner}</li>'
         fix_old = bool(fix) and int(st.get("fixfile_cycle", cur_cycle)) < cur_cycle
         if fix and not fix_old:
-            out += (f'<li class="fixnode"><span class="dot">&#9733;</span><a class="tl-btn cur" href="../../{html.escape(fix)}">Sessions 11 &amp; 12: Your Fix File &rarr;</a></li>'
-                    '<li class="note"><span class="dot"></span><span class="soon">Our final production push: no new homework, just your Fix File.</span></li>')
+            out += (f'<li class="fixnode"><span class="dot">&#9733;</span><a class="tl-btn cur" href="../../{html.escape(fix)}">Sessions 11 &amp; 12: complete Production Push &rarr;</a></li>'
+                    '<li class="note"><span class="dot"></span><span class="soon">We use your Fix File in class for a complete Production Push of everything from the cycle. No new homework.</span></li>')
         else:
-            out += ('<li class="fixnode"><span class="dot">&#9733;</span><span class="lbl">Sessions 11 &amp; 12: Your Fix File</span></li>'
-                    '<li class="note"><span class="dot"></span><span class="soon">Opens after session 11. We use it in class as a final production push of all your errors, with no new homework.</span></li>')
+            out += ('<li class="fixnode"><span class="dot">&#9733;</span><span class="lbl">Sessions 11 &amp; 12: complete Production Push</span></li>'
+                    '<li class="note"><span class="dot"></span><span class="soon">We use your Fix File in class for a complete Production Push of everything from the cycle. No new homework.</span></li>')
         out += "</ol>"
         older = [(k, c) for k, c in weekly if k[0] < cur_cycle]
         if older or fix_old:
