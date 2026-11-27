@@ -390,7 +390,7 @@ def fix_card(href, counts, latest):
         big = (f'<div class="fc-big"><b>{counts["total"]}</b><span>words, phrases and patterns so far</span></div>')
         by = counts["by"]
         split = ('<div class="fc-split">' + "".join(f'<p><b>{by.get(k, 0)}</b>{lbl}</p>' for k, lbl in
-                 [("grammar", "grammar"), ("vocab", "vocabulary"), ("pron", "sounds")]) + "</div>")
+                 [("grammar", "grammar"), ("vocab", "vocabulary"), ("pron", "pronunciation")]) + "</div>")
     return (f'{FIXCARD_CSS}<section class="fixcard"><div class="fc-top"><p class="fc-eye">YOUR FIX FILE</p>{new}</div>{big}{split}'
             '<p class="fc-note">It grows after every class. At the end of the cycle it&rsquo;s yours to keep, with all your homework inside.</p>'
             f'<a class="fc-go" href="../../{html.escape(href)}">Open my Fix File &rarr;</a></section>')
