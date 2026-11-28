@@ -33,7 +33,9 @@ def main():
     # Preply students included. Whole words only, so "Hannah" is not "Anna" and "Andreea" is not "Andre". A pair member's name = the pair's page.
     import re as _re
     pair_of = {m: s["id"] for s in students for m in s.get("members", [])}
-    by_name = {norm(s["name"]): s["id"] for s in students if not s.get("members") and not s.get("offboarded") and s["id"] != "sm"}
+    # "calendar_names": other names a student goes by in the calendar (Roberto is "Carlos" on Preply)
+    by_name = {norm(n): s["id"] for s in students if not s.get("members") and not s.get("offboarded") and s["id"] != "sm"
+               for n in [s["name"]] + s.get("calendar_names", [])}
     pats = [(_re.compile(r"(?<![a-z0-9])" + _re.escape(k) + r"(?![a-z0-9])"), i) for k, i in by_name.items()]
 
     def match(title):
