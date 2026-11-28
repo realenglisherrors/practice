@@ -440,17 +440,19 @@ for _st in ACTIVE:
         _lines.append(f"meet-{_st['id']}|{_st.get('meet_pw', _st['name'])}")
 open(f"{ROOT}/private/meet/list.txt", "w").write("\n".join(_lines) + ("\n" if _lines else ""))
 
-NEXT_JS = """<script>(function(){var e=document.querySelector(".nextc");if(!e)return;var d=new Date(e.getAttribute("data-t"));if(isNaN(d)||d<new Date())return;
+NEXT_JS = """<script>(function(){var e=document.querySelector(".nextc");if(!e)return;var now=new Date(),L=((e.getAttribute("data-ts")||"")+" "+e.getAttribute("data-t")).split(" ").filter(Boolean).map(function(x){return new Date(x)}).filter(function(x){return !isNaN(x)&&x>now}).sort(function(a,b){return a-b}),d=L[0];if(!d)return;
 var z=e.getAttribute("data-z"),o={weekday:"short",month:"short",day:"numeric"},t={hour:"numeric",minute:"2-digit"};if(z){o.timeZone=z;t.timeZone=z;}
 e.querySelector("b").textContent=d.toLocaleDateString("en-US",o)+" \u00b7 "+d.toLocaleTimeString("en-US",t);e.style.display="block";})()</script>"""
 
 
 def next_chip(st):
-    nc = st.get("next_class")
-    if not nc:
+    nc = st.get("next_class") or ""
+    if not nc and not st.get("upcoming_classes"):
         return ""
     z = f' data-z="{html.escape(st["tz"])}"' if st.get("tz") else ""
-    return f'<div class="nextc" data-t="{html.escape(nc)}"{z}><i>Next class</i><b></b></div>'
+    ts = " ".join(st.get("upcoming_classes") or [])  # all upcoming classes: the page picks the next one, so it never goes blank after a class
+    tsa = f' data-ts="{html.escape(ts)}"' if ts else ""
+    return f'<div class="nextc" data-t="{html.escape(nc)}"{tsa}{z}><i>Next class</i><b></b></div>'
 
 
 PAY_JS = """<script>(function(){var bar=document.querySelector(".paybar[data-pay]");if(!bar)return;var P;try{P=JSON.parse(bar.getAttribute("data-pay"))}catch(e){return}

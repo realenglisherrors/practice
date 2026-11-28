@@ -32,7 +32,7 @@ def main():
     # Preply students are not scheduled in this calendar (their times come from the board), so never touch them
     by_name = {norm(s["name"]): s["id"] for s in students if not s.get("members") and "preply" not in (s.get("payment") or {}).get("via", "").lower()}
     now = datetime.datetime.now(datetime.timezone.utc)
-    best, booked = {}, {}
+    best, booked, upcoming = {}, {}, {}
     horizon = now + datetime.timedelta(days=28)
     for e in events:
         key = norm(e["summary"]); ids = TITLES.get(key) or ([by_name[key]] if key in by_name else [])
@@ -44,6 +44,7 @@ def main():
         for i in ids:
             if when <= horizon:
                 booked.setdefault(i, set()).add(raw_day(e["start"]))
+                upcoming.setdefault(i, set()).add(e["start"])
             if i not in best or when < best[i][0]:
                 best[i] = (when, e["start"], e.get("end"))
     n = 0
@@ -64,6 +65,9 @@ def main():
             new = sorted(booked.get(i, ()))
             if t.get("booked_dates") != new:
                 t["booked_dates"] = new; n += 1
+            up = [] if i in NO_NEXT else sorted(upcoming.get(i, ()), key=datetime.datetime.fromisoformat)
+            if t.get("upcoming_classes") != up:  # every class in the next 28 days: the page shows the next one by itself
+                t["upcoming_classes"] = up; n += 1
     if not n:
         print("  site already matches the calendar")
     if not apply:
