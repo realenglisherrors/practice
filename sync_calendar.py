@@ -29,13 +29,26 @@ def main():
                   for e in events["events"] if e.get("status") != "cancelled"]
     students = json.load(open(f"{ROOT}/private/students.json"))
     by_id = {s["id"]: s for s in students}
-    # Preply students are not scheduled in this calendar (their times come from the board), so never touch them
-    by_name = {norm(s["name"]): s["id"] for s in students if not s.get("members") and "preply" not in (s.get("payment") or {}).get("via", "").lower()}
+    # Bianca (Nov 27, 2026): ANY event with a student's name anywhere in its title counts ("Anton", "Preply: Roberto", "Class with Olga"),
+    # Preply students included. Whole words only, so "Hannah" is not "Anna" and "Andreea" is not "Andre". A pair member's name = the pair's page.
+    import re as _re
+    pair_of = {m: s["id"] for s in students for m in s.get("members", [])}
+    by_name = {norm(s["name"]): s["id"] for s in students if not s.get("members") and not s.get("offboarded") and s["id"] != "sm"}
+    pats = [(_re.compile(r"(?<![a-z0-9])" + _re.escape(k) + r"(?![a-z0-9])"), i) for k, i in by_name.items()]
+
+    def match(title):
+        key = norm(title)
+        if key in TITLES:
+            return TITLES[key]
+        ids = [pair_of.get(i, i) for pat, i in pats if pat.search(key)]
+        return sorted(set(ids))
     now = datetime.datetime.now(datetime.timezone.utc)
     best, booked, upcoming = {}, {}, {}
     horizon = now + datetime.timedelta(days=28)
     for e in events:
-        key = norm(e["summary"]); ids = TITLES.get(key) or ([by_name[key]] if key in by_name else [])
+        if "T" not in (e.get("start") or ""):
+            continue  # all-day events (holidays, reminders) are never classes
+        ids = match(e["summary"])
         if not ids:
             print(f"  (skipped calendar event '{e['summary']}': no matching student)"); continue
         when = datetime.datetime.fromisoformat(e["start"])
