@@ -275,7 +275,7 @@ def week_label(k):
 def highlights(desc):
     """Turn the prose description into a few bullets; fall back to the paragraph."""
     t = html.unescape(re.sub(r"<[^>]+>", "", desc))
-    m = re.search(r"then practise with (.+?)(?:,? and send| ?\. Then send|\.$)", t, re.I)
+    m = re.search(r"then practi[cs]e with (.+?)(?:,? and send| ?\. Then send|\.$)", t, re.I)
     practice = m.group(1).strip().rstrip(".") if m else ""
     head = t[: m.start()] if m else t
     items = []
@@ -294,7 +294,7 @@ def highlights(desc):
         items = [(l, x or "the sounds and words from this week\u2019s class") for l, x in items]
         lis = "".join(f'<li><b>{html.escape(l)}</b> {html.escape(x)}</li>' for l, x in items)
     if practice:
-        lis += f'<li><b>Practise</b> {html.escape(practice)}</li>'
+        lis += f'<li><b>Practice</b> {html.escape(practice)}</li>'
     lis += '<li><b>Finish</b> by sending your results to Bianca by email and WhatsApp</li>'
     return f'<ul class="hl">{lis}</ul>'
 
