@@ -152,6 +152,7 @@ footer{text-align:center;padding:8px 20px 40px;font-size:.72rem;color:#9aa4b2;le
 h1,h2,.band h1,.sec h2,.hero-card .title,details.arch summary h2,.promo h2,.enter-card label{font-family:'Montserrat',system-ui,sans-serif!important;font-weight:800!important;letter-spacing:-.02em!important}
 .pay,a.hero-card,.enter-card,.feat,.paybar{border:0!important}
 a.hero-card{border-left:5px solid var(--gold)!important;border-radius:24px}
+div.hero-card{background:var(--card);border-radius:24px;padding:22px 24px 20px;border-left:5px solid var(--gold)}
 .enter-card,.promo,.pay{border-radius:24px}
 a.row{border:0;background:var(--card);border-radius:16px}
 .feat{background:var(--card)}
@@ -729,10 +730,16 @@ for st in ACTIVE:
     if weekly:
         cur_cycle = max(k[0] for k, _ in weekly)
         this = weekly[0]
-        out += f'<div class="sec"><h2>This week</h2></div>{card_html(this[1], "../../")}'
         total = int(st.get("homeworks", 10))
         bywk = {k[1]: c for k, c in weekly if k[0] == cur_cycle}
-        latest = max(bywk)
+        nohw = {int(n) for n in st.get("no_homework", []) if int(n) not in bywk}  # sessions held with no homework (this cycle)
+        latest = max(set(bywk) | nohw)
+        if latest in nohw:
+            out += ('<div class="sec"><h2>This week</h2></div><div class="hero-card"><span class="now">This week</span>'
+                    f'<div class="title">No homework this week</div><div class="subtitle">Session {latest} was a class-only session</div>'
+                    '<p class="desc">Take a few minutes before our next class to look through your Fix File, or go back to any earlier homework below.</p></div>')
+        else:
+            out += f'<div class="sec"><h2>This week</h2></div>{card_html(this[1], "../../")}'
         fix_now = bool(fix) and int(st.get("fixfile_cycle", cur_cycle)) >= cur_cycle
         fixc = fix_counts(fix) if fix_now else None  # an old cycle's Fix File: its session counts don't belong on this cycle's sessions
         if fix_now:
@@ -747,6 +754,8 @@ for st in ACTIVE:
                 inner = (f'<a class="tl-btn{" cur" if is_cur else ""}" href="../../{c["href"]}">Session {n} Homework &rarr;</a>'
                          + (f'<span class="fc-add">+{add} cards</span>' if add else ""))
                 mark = "&#10003;" if not is_cur else str(n)
+            elif n in nohw:
+                cls, inner, mark = ("cur" if n == latest else "done"), f'<span class="lbl">Session {n}</span><span class="soon">no homework</span>', ("&#10003;" if n < latest else str(n))
             elif n < latest:
                 cls, inner, mark = "done", f'<span class="lbl">Session {n} Homework</span><span class="soon">done in class</span>', "&#10003;"
             else:
