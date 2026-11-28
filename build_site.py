@@ -724,7 +724,8 @@ for st in ACTIVE:
     on_cycle = bool(weekly)
     lede = (("This week&rsquo;s homework, every week before it, and your class link: everything you need between lessons, in one place."
              if st["meet"] else "This week&rsquo;s homework and every week before it: everything you need between lessons, in one place.")
-            if on_cycle else "Your practice exercises, all in one place.")
+            if on_cycle else ("Your homework, your Fix File and your next class: everything you need between lessons, in one place."
+                              if st.get("start") else "Your practice exercises, all in one place."))
     out += ('<header class="band"><div class="band-in"><img src="../../logo-vertical-transparent.png" alt="Real English Errors">'
             f'<div><p class="eyebrow">Your personal page</p><h1 class="hi">Hi, {esc}</h1>'
             f'<p class="lede">{lede}</p>'
@@ -790,7 +791,13 @@ for st in ACTIVE:
         out += '<div class="sec"><h2>Practice</h2></div><div class="rows">'
         out += "".join(row_html(c, None, "../../") for c in extra)
         out += "</div>"
-    if not on_cycle:
+    if not on_cycle and st.get("start"):  # enrolled, cycle not started yet: welcome them, never the sales box
+        out += ('<div class="sec"><h2>Welcome</h2></div><div class="hero-card"><span class="now">Your 12-session cycle</span>'
+                '<div class="title">We&rsquo;re about to start</div>'
+                '<ul class="hl"><li><b>After every class</b> your homework appears here, made from your own errors</li>'
+                '<li><b>Your Fix File</b> grows with every session, so the corrections stay</li>'
+                '<li><b>Your next class</b> is always in the top corner of this page</li></ul></div>')
+    elif not on_cycle:
         out += PROMO
     os.makedirs(f"{ROOT}/s/{st['slug']}", exist_ok=True)
     out += keep_pack(st)
