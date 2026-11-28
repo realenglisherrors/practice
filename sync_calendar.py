@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """sync_calendar.py: make each student page's "Next class" match Bianca's Google Calendar.
-Usage: python3 sync_calendar.py events.json [--apply]
+Usage: python3 sync_calendar.py events.json [preply.json ...] [--apply]
 events.json = list of {"summary": "<calendar title>", "start": "2026-11-23T12:00:00-07:00"} (Claude pulls these from Google Calendar).
 For every student found in the calendar, next_class = the earliest event that has not started yet. Students not in the list are left alone.
 Those students get calendar_sync=true, so sync_board.py stops overwriting their next_class from the board (the calendar wins)."""
@@ -22,11 +22,15 @@ def raw_day(start):
 
 
 def main():
-    events = json.load(open(sys.argv[1])); apply = "--apply" in sys.argv
-    if isinstance(events, dict):  # the raw Google Calendar export (what the calendar tool saves): keep title + start of live events
-        events = [{"summary": e.get("summary", ""), "start": e["start"].get("dateTime") or e["start"].get("date"),
+    apply = "--apply" in sys.argv
+    events = []  # one or more files: the main calendar AND the "Preply Schedule" calendar (Preply lessons live there)
+    for path in [a for a in sys.argv[1:] if not a.startswith("--")]:
+        ev = json.load(open(path))
+        if isinstance(ev, dict):  # the raw Google Calendar export (what the calendar tool saves): keep title + start of live events
+            ev = [{"summary": e.get("summary", ""), "start": e["start"].get("dateTime") or e["start"].get("date"),
                    "end": (e.get("end") or {}).get("dateTime")}
-                  for e in events["events"] if e.get("status") != "cancelled"]
+                  for e in ev["events"] if e.get("status") != "cancelled"]
+        events += ev
     students = json.load(open(f"{ROOT}/private/students.json"))
     by_id = {s["id"]: s for s in students}
     # Bianca (Nov 27, 2026): ANY event with a student's name anywhere in its title counts ("Anton", "Preply: Roberto", "Class with Olga"),
