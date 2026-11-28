@@ -1,11 +1,12 @@
 {
- "total": 24,
+ "total": 56,
  "by": {
-  "grammar": 4,
-  "vocab": 16,
-  "pron": 4
+  "grammar": 23,
+  "vocab": 25,
+  "pron": 8
  },
  "ses": {
-  "1": 24
+  "1": 24,
+  "2": 32
  }
 }
