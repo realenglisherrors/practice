@@ -34,15 +34,24 @@ def main():
     import re as _re
     pair_of = {m: s["id"] for s in students for m in s.get("members", [])}
     # "calendar_names": other names a student goes by in the calendar (Roberto is "Carlos" on Preply)
-    by_name = {norm(n): s["id"] for s in students if not s.get("members") and not s.get("offboarded") and s["id"] != "sm"
-               for n in [s["name"]] + s.get("calendar_names", [])}
-    pats = [(_re.compile(r"(?<![a-z0-9])" + _re.escape(k) + r"(?![a-z0-9])"), i) for k, i in by_name.items()]
+    # Days: "calendar_days" limits every match for that student, "calendar_names_days" only the matches on their other names.
+    # Masha takes lessons on her brother Anton's Preply account: "Anton" on a weekday = Anton, on a weekend = Masha (Bianca, Nov 27, 2026).
+    live = [s for s in students if not s.get("members") and not s.get("offboarded") and s["id"] != "sm"]
+    pats = [(_re.compile(r"(?<![a-z0-9])" + _re.escape(norm(n)) + r"(?![a-z0-9])"), s, n != s["name"])
+            for s in live for n in [s["name"]] + s.get("calendar_names", [])]
 
-    def match(title):
+    def day_ok(rule, start):
+        if not rule:
+            return True
+        wknd = datetime.date.fromisoformat(start[:10]).weekday() >= 5
+        return wknd if rule == "weekend" else not wknd
+
+    def match(title, start):
         key = norm(title)
         if key in TITLES:
             return TITLES[key]
-        ids = [pair_of.get(i, i) for pat, i in pats if pat.search(key)]
+        ids = [pair_of.get(s["id"], s["id"]) for pat, s, alias in pats if pat.search(key)
+               and day_ok(s.get("calendar_days"), start) and (not alias or day_ok(s.get("calendar_names_days"), start))]
         return sorted(set(ids))
     now = datetime.datetime.now(datetime.timezone.utc)
     best, booked, upcoming = {}, {}, {}
@@ -50,7 +59,7 @@ def main():
     for e in events:
         if "T" not in (e.get("start") or ""):
             continue  # all-day events (holidays, reminders) are never classes
-        ids = match(e["summary"])
+        ids = match(e["summary"], e["start"])
         if not ids:
             print(f"  (skipped calendar event '{e['summary']}': no matching student)"); continue
         when = datetime.datetime.fromisoformat(e["start"])
