@@ -119,7 +119,7 @@ def main():
     open(f"exercises/{name}.counts.json", "a").write("\n")
     instr, ph, err = (("Type your 4-digit code to start.", "4-digit code", "Not quite. Check your code and try again.") if secret != pw
                       else ("Type your password to start.", "Password", "Not quite. Check the spelling and the capital letter."))
-    subprocess.run(["npx", "staticrypt", f"src/exercises/{name}.html", "--password", secret, "-d", "exercises/", "--remember", "false", "--short",
+    subprocess.run(["npx", "staticrypt", f"src/exercises/{name}.html", "--password", secret, "-d", "exercises/", "--remember", "0", "--short", "--template-remember", "Remember me on this device",
                     "-t", "src/password-template.html", "--template-title", "Let's knock out these errors!", "--template-instructions", instr,
                     "--template-button", "Start training", "--template-placeholder", ph, "--template-error", err],
                    check=True, stdout=subprocess.DEVNULL)
